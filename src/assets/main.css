@@ -1,0 +1,201 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* colores del sistema */
+    --color-primary: 0, 149, 116;
+    --color-secondary: 0, 26, 62;
+    --color-secondary-700: 13, 51, 105;
+    --color-input: var(--color-input-light);
+    --color-hover-input: var(--color-hover-input-light);
+    --color-htable: 29, 40, 52;
+
+    /* colores universales */
+    --color-danger: 255, 55, 58;
+    --color-positive: 33, 186, 69;
+    --color-info: 49, 204, 236;
+    --color-warning: 242, 192, 55;
+
+    /* colores version light */
+    --color-input-light: 245, 245, 245;
+    --color-hover-input-light: 229, 229, 229;
+
+    /* colores version dark */
+    --color-input-dark: 68, 81, 95;
+    --color-hover-input-dark: 86, 99, 113;
+  }
+  @font-face {
+    font-family: "FuturaPTBook";
+    src: url("./fonts/FuturaPTBook.otf") format("opentype");
+  }
+  @font-face {
+    font-family: "FuturaBook";
+    src: url("./fonts/FuturaBook.otf") format("opentype");
+  }
+  @font-face {
+    font-family: "FuturaPTDemi";
+    src: url("./fonts/FuturaPTDemi.otf") format("opentype");
+  }
+  @font-face {
+    font-family: "FuturaPTMedium";
+    src: url("./fonts/FuturaPTMedium.otf") format("opentype");
+  }
+  @font-face {
+    font-family: "FuturaMedium";
+    src: url("./fonts/FuturaMedium.otf") format("opentype");
+  }
+  
+  html {
+    font-family: "FuturaPTBook", sans-serif;
+  }
+  h1 {
+    font-family: "FuturaPTDemi", sans-serif;
+  }
+  h2 {
+    font-family: "FuturaPTMedium", sans-serif;
+  }
+  label {
+    font-family: "FuturaBook", sans-serif;
+  }
+}
+
+@layer components {
+  .theme-light {
+    @apply bg-light;
+  }
+  .theme-light2 {
+    @apply bg-light2;
+  }
+  .theme-dark {
+    @apply bg-dark;
+  }
+  .theme-dark2 {
+    @apply bg-dark2;
+  }
+  .modalLight {
+    @apply bg-modal;
+  }
+  .modalDark {
+    @apply bg-modalDark;
+  }
+  .collapseLight {
+    @apply bg-collapse;
+  }
+  .collapseDark {
+    @apply bg-collapseDark;
+  }
+}
+
+.bg-light {
+  background: rgba(255, 255, 255, 0.8);
+  background: radial-gradient(
+      farthest-side at 20% 0%,
+      rgba(238, 174, 202, 0.5),
+      transparent 40%
+    ),
+    radial-gradient(
+      farthest-side at 10% 80%,
+      rgba(211, 182, 250, 0.6),
+      transparent 60%
+    ),
+    radial-gradient(
+      farthest-corner at 100% 10%,
+      rgba(238, 174, 202, 1),
+      transparent 30%
+    ),
+    radial-gradient(
+      farthest-corner at 70% 70%,
+      rgba(211, 182, 250, 0.6),
+      transparent 40%
+    );
+}
+.bg-light2 {
+  background: rgba(255, 255, 255, 0.8);
+  background: radial-gradient(
+    farthest-side at 100% 80%,
+    rgba(211, 182, 250, 0.6),
+    rgba(243, 243, 245, 0.8) 60%
+  );
+}
+.bg-dark {
+  background: rgba(0, 0, 0, 0.8);
+  background: radial-gradient(
+      farthest-side at 50% 0%,
+      rgba(199, 21, 74, 0.5),
+      transparent 50%
+    ),
+    radial-gradient(
+      farthest-side at 5% 60%,
+      rgba(60, 18, 114, 0.6),
+      transparent 60%
+    ),
+    radial-gradient(
+      farthest-corner at 100% 10%,
+      rgba(0, 0, 0, 0.8),
+      transparent 30%
+    ),
+    radial-gradient(circle at 90% 80%, rgba(60, 18, 114, 1), rgb(9, 2, 32) 20%);
+}
+.bg-dark2 {
+  background: rgba(0, 0, 0, 0.8);
+  background: radial-gradient(
+      farthest-side at 50% -10%,
+      rgba(199, 21, 74, 0.5),
+      transparent 50%
+    ),
+    radial-gradient(
+      farthest-corner at 100% 10%,
+      rgba(0, 0, 0, 0.8),
+      transparent 30%
+    ),
+    radial-gradient(circle at 90% 80%, rgba(60, 18, 114, 1), rgb(9, 2, 32) 20%);
+}
+.backdrop-modal {
+  background: var(--unnamed-color-000000) 0% 0% no-repeat padding-box;
+  opacity: 1;
+  backdrop-filter: blur(27px);
+  -webkit-backdrop-filter: blur(27px);
+}
+
+.bg-modal {
+  background: rgba(255, 255, 255, 0.8) 0% 0% no-repeat padding-box;
+  border: 1px solid #ffffff;
+  width: 63.125%;
+}
+
+.bg-modalDark {
+  background: rgba(31, 40, 51, 0.4) 0% 0% no-repeat padding-box;
+  border: 1px solid #ffffff;
+}
+
+.bg-collapse {
+  background: rgba(255, 255, 255, 0.87) 0% 0% no-repeat padding-box;
+  /* border: 1px solid #ff373a; */
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(50px);
+}
+
+.bg-collapseDark {
+  background: rgba(40, 49, 48, 0.6) 0% 0% no-repeat padding-box;
+  opacity: 1;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.blur-bg {
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(5px);
+}
+
+.dark .blur-bg {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.bg-primary {
+  background-color: rgba(var(--color-primary), 1);
+}
+.bg-secondary {
+  background-color: rgba(var(--color-secondary), 1);
+}
