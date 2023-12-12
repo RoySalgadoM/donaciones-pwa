@@ -47,7 +47,9 @@
             <div
               class="bg-white p-2 shadow-md flex flex-col rounded-lg rounded-collapse-top"
             >
-              <div class="flex flex-row shrink-0 mr-2 items-center justify-center">
+              <div
+                class="flex flex-row shrink-0 mr-2 items-center justify-center"
+              >
                 <span
                   class="material-icons text-primary"
                   style="font-size: 4rem"
@@ -56,7 +58,11 @@
                 <div class="ml-2 flex-grow min-w-0">
                   <div class="font-semibold break-words truncate">
                     {{
-                      user.name + " " + user.lastname + " " + user.secondSurname
+                      user.name +
+                      " " +
+                      user.lastname +
+                      " " +
+                      (user.secondSurname ? user.secondSurname : "")
                     }}
                   </div>
                   <div class="text-gray-600 break-words truncate">
@@ -107,7 +113,7 @@
                   color="bg-gray-200"
                   hoverColor="hover:bg-gray-200"
                   rounded
-                  @click="handleChangeStatus(user.id, user.status)"
+                  @click="showModalConfirm(user.id, user.status)"
                 >
                   <template #icon>
                     <span class="material-icons">close</span>
@@ -119,7 +125,7 @@
                   color="bg-gray-200"
                   hoverColor="hover:bg-gray-200"
                   rounded
-                  @click="handleChangeStatus(user.id, user.status)"
+                  @click="showModalConfirm(user.id, user.status)"
                 >
                   <template #icon>
                     <span class="material-icons">done</span>
@@ -160,7 +166,7 @@
                   color="bg-gray-200"
                   hoverColor="hover:bg-gray-200"
                   rounded
-                  @click="handleChangeStatus(user.id, user.status)"
+                  @click="showModalConfirm(user.id, user.status)"
                 >
                   <template #icon>
                     <span class="material-icons">close</span>
@@ -172,7 +178,7 @@
                   color="bg-gray-200"
                   hoverColor="hover:bg-gray-200"
                   rounded
-                  @click="handleChangeStatus(user.id, user.status)"
+                  @click="showModalConfirm(user.id, user.status)"
                 >
                   <template #icon>
                     <span class="material-icons">done</span>
@@ -283,11 +289,18 @@
             </div>
           </div>
           <div class="flex items-center justify-end gap-2">
-            <Btn color="bg-primary" hoverColor="hover:bg-primary" rounded>
-              <template #icon>
-                <span class="material-icons">save</span>
-              </template>
-            </Btn>
+            <div class="flex-grow">
+              <Btn
+                color="bg-primary"
+                hoverColor="hover:bg-primary"
+                text="Guardar"
+                rounded
+              >
+                <template #icon>
+                  <span class="material-icons">save</span>
+                </template>
+              </Btn>
+            </div>
             <Btn
               type="button"
               color="bg-gray-200"
@@ -367,11 +380,18 @@
             </div>
           </div>
           <div class="flex items-center justify-end gap-2">
-            <Btn color="bg-primary" hoverColor="hover:bg-primary" rounded>
-              <template #icon>
-                <span class="material-icons">save</span>
-              </template>
-            </Btn>
+            <div class="flex-grow">
+              <Btn
+                color="bg-primary"
+                hoverColor="hover:bg-primary"
+                text="Guardar"
+                rounded
+              >
+                <template #icon>
+                  <span class="material-icons">save</span>
+                </template>
+              </Btn>
+            </div>
             <Btn
               type="button"
               color="bg-gray-200"
@@ -402,7 +422,7 @@
       >
         <div class="col-span-12 mb-1">
           <div class="flex flex-col flex-grow">
-            <label class="text-primary text-sm font-title"
+            <label class="text-primary text-md font-title"
               >Nombre completo</label
             >
             <label class="text-black dark:text-white text-lg font-title">{{
@@ -411,14 +431,14 @@
                   " " +
                   userEdit.lastname +
                   " " +
-                  userEdit.secondSurname
+                  (userEdit.secondSurname ? userEdit.secondSurname : "")
                 : "Nombre de usuario"
             }}</label>
           </div>
         </div>
         <div class="col-span-12 sm:col-span-6 mb-1">
           <div class="flex flex-col flex-grow">
-            <label class="text-primary text-sm font-title">Correo</label>
+            <label class="text-primary text-md font-title">Correo</label>
             <label class="text-black dark:text-white text-lg font-title">{{
               userEdit ? userEdit.email : "Correo"
             }}</label>
@@ -426,7 +446,7 @@
         </div>
         <div class="col-span-12 sm:col-span-6 mb-1">
           <div class="flex flex-col flex-grow">
-            <label class="text-primary text-sm font-title">Teléfono</label>
+            <label class="text-primary text-md font-title">Teléfono</label>
             <label class="text-black dark:text-white text-lg font-title">{{
               userEdit ? userEdit.phone : "Teléfono"
             }}</label>
@@ -434,7 +454,7 @@
         </div>
         <div class="col-span-12 sm:col-span-6 mb-1">
           <div class="flex flex-col flex-grow">
-            <label class="text-primary text-sm font-title">Rol</label>
+            <label class="text-primary text-md font-title">Rol</label>
             <label class="text-black dark:text-white text-lg font-title">{{
               userEdit ? userEdit.role : "Rol"
             }}</label>
@@ -442,21 +462,78 @@
         </div>
         <div class="col-span-12 sm:col-span-6 mb-1">
           <div class="flex flex-col flex-grow">
-            <label class="text-primary text-sm font-title">Estado</label>
-            <label class="text-black dark:text-white text-lg font-title">{{
-              userEdit ? (userEdit.status ? "Activo" : "Inactivo") : "Estado"
-            }}</label>
+            <label class="text-primary text-md font-title">Estado</label>
+            <div class="min-w-0">
+              <span
+                v-if="userEdit.status"
+                class="bg-green-200 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded"
+              >
+                Activo
+              </span>
+              <span v-else
+                class="bg-red-200 text-red-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded"
+              >
+                Inactivo
+              </span>
+            </div>
           </div>
         </div>
       </div>
     </template>
   </Dialog>
+
+  <!-- Modal para confirmar acción -->
+  <Modal size="sm" :show="modalConfirm" @update:show="modalConfirm = $event">
+    <template #content>
+      <div class="flex flex-col justify-center items-center p-2">
+        <div>
+          <img src="@/assets/images/ask.png" width="120" height="120" alt="" />
+        </div>
+        <div class="text-center mb-6">
+          <span class="text-xl font-bold text-black">
+            ¿Estás seguro de cambiar el estado?
+          </span>
+        </div>
+        <div class="grid grid-cols-12 gap-1">
+          <div class="col-span-6">
+            <Btn
+              color="bg-primary"
+              hoverColor="hover:bg-primary"
+              text="Sí"
+              rounded
+              @click="() => handleChangeStatus()"
+            >
+              <template #icon>
+                <span class="material-icons">check</span>
+              </template>
+            </Btn>
+          </div>
+          <div class="col-span-6">
+            <Btn
+              type="button"
+              color="bg-gray-200"
+              hoverColor="hover:bg-gray-200"
+              rounded
+              text="No"
+              @click="() => (modalConfirm = false)"
+            >
+              <template #icon>
+                <span class="material-icons">close</span>
+              </template>
+            </Btn>
+          </div>
+        </div>
+      </div>
+    </template>
+  </Modal>
+
 </template>
   
 <script setup>
 import { inject, reactive, ref, onMounted } from "vue";
 import { useUsersStore } from "@/modules/employees/stores/user";
 import { storeToRefs } from "pinia";
+import { loading } from "@/kernel/components/loading";
 
 const showMsg = inject("showMsg", () => {});
 const timeout = ref(null);
@@ -464,6 +541,7 @@ const filter = ref("");
 const modalAdd = ref(false);
 const modalEdit = ref(false);
 const modalInfo = ref(false);
+const modalConfirm = ref(false);
 const usersStore = useUsersStore();
 const { users, pagination } = storeToRefs(usersStore);
 
@@ -494,12 +572,14 @@ const userEdit = ref({
   secondSurname: "",
   role: "",
   phone: "",
+  email: "",
 });
 
 const password_confirmation = ref("");
 
 const handleUsers = async () => {
   try {
+    loading.show();
     let payload = {
       query: {
         filter: filter.value,
@@ -514,6 +594,8 @@ const handleUsers = async () => {
       console.log(error);
       showMsg("error", "Error interno del servidor");
     }
+  } finally {
+    loading.hide();
   }
 };
 
@@ -609,11 +691,25 @@ const handleUpdate = async () => {
   }
 };
 
-const handleChangeStatus = async (id, status) => {
+const showModalConfirm = async (id, status) => {
   try {
-    let res = await usersStore.changeStatus(id, !status);
+    userEdit.value = {
+      id: id,
+      status: status,
+    };
+    modalConfirm.value = true;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const handleChangeStatus = async () => {
+  try {
+    loading.show();
+    let res = await usersStore.changeStatus(userEdit.value.id, !userEdit.value.status);
     if (res.data.statusCode == 200) {
       showMsg("success", "Estado actualizado correctamente");
+      modalConfirm.value = false;
       handleUsers();
     }
   } catch (error) {
@@ -625,6 +721,8 @@ const handleChangeStatus = async (id, status) => {
       console.error(error);
       showMsg("error", "Error interno del servidor");
     }
+  }finally {
+    loading.hide();
   }
 };
 
@@ -637,6 +735,8 @@ const selectedRow = async (user) => {
       secondSurname: user.secondSurname,
       role: user.role,
       phone: user.phone,
+      email: user.email,
+      status: user.status,
     };
     modalInfo.value = true;
   } catch (error) {

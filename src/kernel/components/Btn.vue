@@ -21,7 +21,7 @@
   import { useCustomizationStore } from "@/config/stores/customization.ts";
   
   export default {
-    name: "EBtn",
+    name: "Btn",
     computed: {
       ...mapState(useCustomizationStore, ["isDarkMode"]),
       mainClass() {
@@ -37,7 +37,7 @@
           this.uppercase ? "uppercase" : "",
           this.capitalize ? "capitalize" : "",
           this.bold ? "font-bold" : "font-semibold",
-          this.text ? "w-full h-fit px-16 py-1.5" : "w-11 h-11",
+          this.text ? "w-full h-fit px-10 py-1.5" : "w-11 h-11",
           [
             this.fill
               ? [calculateTextColor(this.color)]

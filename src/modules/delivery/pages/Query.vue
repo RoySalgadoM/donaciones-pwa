@@ -1,6 +1,6 @@
 <template>
   <ContentSection>
-    <template #title> Recolecciones </template>
+    <template #title> Repartos </template>
     <template #contentOptions>
       <Input
         noWhiteSpace

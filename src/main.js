@@ -15,7 +15,13 @@ import Select from "@/kernel/components/Select.vue";
 import ContentSection from "@/kernel/layouts/ContentSection.vue";
 import Collapse from "@/kernel/components/Collapse.vue";
 import Dialog from "@/kernel/components/Dialog.vue";
+import Modal from "@/kernel/components/Modal.vue";
+import Table from "@/kernel/components/Table.vue";
+import Icon from "@/kernel/components/Icon.vue";
+import PaginationTable from "@/kernel/components/PaginationTable.vue";
+import Calendar from "@/kernel/components/Calendar.vue";
 import { notify } from "@/kernel/components/notify";
+import { loading } from "@/kernel/components/loading";
 
 const app = createApp(App);
 
@@ -27,7 +33,13 @@ app.component("Form", Form);
 app.component("Select", Select);
 app.component("Collapse", Collapse);
 app.component("Dialog", Dialog);
+app.component("Modal", Modal);
+app.component("Table", Table);
+app.component("Icon", Icon);
+app.component("PaginationTable", PaginationTable);
+app.component("Calendar", Calendar);
 app.component("ContentSection", ContentSection);
 app.config.globalProperties.$notify = notify;
+app.config.globalProperties.$loading = loading;
 
 app.mount("#app");

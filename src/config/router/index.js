@@ -63,6 +63,16 @@ const router = createRouter({
             },
           ],
         },
+        {
+          path: "repartos",
+          children: [
+            {
+              path: "query",
+              name: "queryDeliveries",
+              component: () => import("@/modules/delivery/pages/Query.vue"),
+            },
+          ],
+        },
       ],
     },
   ],

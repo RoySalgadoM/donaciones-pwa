@@ -173,16 +173,18 @@
             />
           </div>
           <div class="flex items-center justify-end gap-2">
-            <Btn
-              type="submit"
-              color="bg-primary"
-              hoverColor="hover:bg-primary"
-              rounded
-            >
-              <template #icon>
-                <span class="material-icons">save</span>
-              </template>
-            </Btn>
+            <div class="flex-grow">
+              <Btn
+                color="bg-primary"
+                hoverColor="hover:bg-primary"
+                text="Guardar"
+                rounded
+              >
+                <template #icon>
+                  <span class="material-icons">save</span>
+                </template>
+              </Btn>
+            </div>
             <Btn
               type="submit"
               color="bg-gray-200"
@@ -219,15 +221,18 @@
             />
           </div>
           <div class="flex items-center justify-end gap-2">
-            <Btn
-              color="bg-primary"
-              hoverColor="hover:bg-primary"
-              rounded
-            >
-              <template #icon>
-                <span class="material-icons">save</span>
-              </template>
-            </Btn>
+            <div class="flex-grow">
+              <Btn
+                color="bg-primary"
+                hoverColor="hover:bg-primary"
+                text="Guardar"
+                rounded
+              >
+                <template #icon>
+                  <span class="material-icons">save</span>
+                </template>
+              </Btn>
+            </div>
             <Btn
               type="button"
               color="bg-gray-200"
@@ -251,6 +256,7 @@ import { inject } from "vue";
 import { ref, onMounted } from "vue";
 import { useProductsStore } from "@/modules/products/stores/product";
 import { storeToRefs } from "pinia";
+import { loading } from "@/kernel/components/loading";
 
 const showMsg = inject("showMsg", () => {});
 const timeout = ref(null);
@@ -277,9 +283,11 @@ const pag = ref({
 
 const handleProducts = async () => {
   try {
+    loading.show();
     let payload = {
       query: {
         filter: filter.value,
+        status: "all",
         ...pag.value,
       },
     };
@@ -291,6 +299,8 @@ const handleProducts = async () => {
       console.log(error);
       showMsg("error", "Error interno del servidor");
     }
+  }finally{
+    loading.hide();
   }
 };
 

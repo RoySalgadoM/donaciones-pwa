@@ -107,7 +107,8 @@
                   color="bg-gray-200"
                   hoverColor="hover:bg-gray-200"
                   rounded
-                  @click="handleChangeStatus(store.id, store.status)"
+                  @click="showModalConfirm(store.id, store.status)"
+                  title="Desactivar"
                 >
                   <template #icon>
                     <span class="material-icons">close</span>
@@ -119,7 +120,8 @@
                   color="bg-gray-200"
                   hoverColor="hover:bg-gray-200"
                   rounded
-                  @click="handleChangeStatus(store.id, store.status)"
+                  title="Activar"
+                  @click="showModalConfirm(store.id, store.status)"
                 >
                   <template #icon>
                     <span class="material-icons">done</span>
@@ -160,7 +162,7 @@
                   color="bg-gray-200"
                   hoverColor="hover:bg-gray-200"
                   rounded
-                  @click="handleChangeStatus(store.id, store.status)"
+                  @click="showModalConfirm(store.id, store.status)"
                 >
                   <template #icon>
                     <span class="material-icons">close</span>
@@ -172,7 +174,7 @@
                   color="bg-gray-200"
                   hoverColor="hover:bg-gray-200"
                   rounded
-                  @click="handleChangeStatus(store.id, store.status)"
+                  @click="showModalConfirm(store.id, store.status)"
                 >
                   <template #icon>
                     <span class="material-icons">done</span>
@@ -252,11 +254,18 @@
             </div>
           </div>
           <div class="flex items-center justify-end gap-2 mt-5">
-            <Btn color="bg-primary" hoverColor="hover:bg-primary" rounded>
-              <template #icon>
-                <span class="material-icons">save</span>
-              </template>
-            </Btn>
+            <div class="flex-grow">
+              <Btn
+                color="bg-primary"
+                hoverColor="hover:bg-primary"
+                text="Guardar"
+                rounded
+              >
+                <template #icon>
+                  <span class="material-icons">save</span>
+                </template>
+              </Btn>
+            </div>
             <Btn
               type="button"
               color="bg-gray-200"
@@ -340,11 +349,18 @@
             </div>
           </div>
           <div class="flex items-center justify-end gap-2 mt-5">
-            <Btn color="bg-primary" hoverColor="hover:bg-primary" rounded>
-              <template #icon>
-                <span class="material-icons">save</span>
-              </template>
-            </Btn>
+            <div class="flex-grow">
+              <Btn
+                color="bg-primary"
+                hoverColor="hover:bg-primary"
+                text="Guardar"
+                rounded
+              >
+                <template #icon>
+                  <span class="material-icons">save</span>
+                </template>
+              </Btn>
+            </div>
             <Btn
               type="button"
               color="bg-gray-200"
@@ -375,7 +391,7 @@
       >
         <div class="col-span-12 sm:col-span-6 mb-1">
           <div class="flex flex-col flex-grow">
-            <label class="text-primary text-sm font-title">Nombre</label>
+            <label class="text-primary text-md font-title">Nombre</label>
             <label class="text-black dark:text-white text-lg font-title">{{
               storeEdit ? storeEdit.name : "Nombre"
             }}</label>
@@ -383,7 +399,7 @@
         </div>
         <div class="col-span-12 sm:col-span-6 mb-1">
           <div class="flex flex-col flex-grow">
-            <label class="text-primary text-sm font-title"
+            <label class="text-primary text-md font-title"
               >Nombre del responsable</label
             >
             <label class="text-black dark:text-white text-lg font-title">{{
@@ -393,7 +409,7 @@
         </div>
         <div class="col-span-12 mb-1">
           <div class="flex flex-col flex-grow">
-            <label class="text-primary text-sm font-title">Dirección</label>
+            <label class="text-primary text-md font-title">Dirección</label>
             <label class="text-black dark:text-white text-lg font-title">{{
               storeEdit ? storeEdit.address : "Dirección"
             }}</label>
@@ -401,7 +417,7 @@
         </div>
         <div class="col-span-12 sm:col-span-6 mb-1">
           <div class="flex flex-col flex-grow">
-            <label class="text-primary text-sm font-title">Teléfonos</label>
+            <label class="text-primary text-md font-title">Teléfonos</label>
             <label
               v-for="phone in storeEdit.phones"
               :key="phone"
@@ -413,21 +429,78 @@
         </div>
         <div class="col-span-12 sm:col-span-6 mb-1">
           <div class="flex flex-col flex-grow">
-            <label class="text-primary text-sm font-title">Estado</label>
-            <label class="text-black dark:text-white text-lg font-title">{{
-              storeEdit ? (storeEdit.status ? "Activo" : "Inactivo") : "Estado"
-            }}</label>
+            <label class="text-primary text-md font-title">Estado</label>
+            <div class="min-w-0">
+              <span
+                v-if="storeEdit.status"
+                class="bg-green-200 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded"
+              >
+                Activo
+              </span>
+              <span v-else
+                class="bg-red-200 text-red-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded"
+              >
+                Inactivo
+              </span>
+            </div>
           </div>
         </div>
       </div>
     </template>
   </Dialog>
+
+  <!-- Modal para confirmar acción -->
+  <Modal size="sm" :show="modalConfirm" @update:show="modalConfirm = $event">
+    <template #content>
+      <div class="flex flex-col justify-center items-center p-2">
+        <div>
+          <img src="@/assets/images/ask.png" width="120" height="120" alt="" />
+        </div>
+        <div class="text-center mb-6">
+          <span class="text-xl font-bold text-black">
+            ¿Estás seguro de cambiar el estado?
+          </span>
+        </div>
+        <div class="grid grid-cols-12 gap-1">
+          <div class="col-span-6">
+            <Btn
+              color="bg-primary"
+              hoverColor="hover:bg-primary"
+              text="Sí"
+              rounded
+              @click="() => handleChangeStatus()"
+            >
+              <template #icon>
+                <span class="material-icons">check</span>
+              </template>
+            </Btn>
+          </div>
+          <div class="col-span-6">
+            <Btn
+              type="button"
+              color="bg-gray-200"
+              hoverColor="hover:bg-gray-200"
+              rounded
+              text="No"
+              @click="() => (modalConfirm = false)"
+            >
+              <template #icon>
+                <span class="material-icons">close</span>
+              </template>
+            </Btn>
+          </div>
+        </div>
+      </div>
+    </template>
+  </Modal>
+
 </template>
     
   <script setup>
 import { inject, reactive, ref, onMounted } from "vue";
 import { useStoresStore } from "@/modules/stores/stores/store";
 import { storeToRefs } from "pinia";
+import { loading } from "@/kernel/components/loading";
 
 const showMsg = inject("showMsg", () => {});
 const timeout = ref(null);
@@ -435,6 +508,7 @@ const filter = ref("");
 const modalAdd = ref(false);
 const modalEdit = ref(false);
 const modalInfo = ref(false);
+const modalConfirm = ref(false);  
 const storesStore = useStoresStore();
 const { stores } = storeToRefs(storesStore);
 
@@ -470,6 +544,7 @@ const editPhones = ref({
 
 const handleStores = async () => {
   try {
+    loading.show();
     let payload = {
       query: {
         filter: filter.value,
@@ -484,6 +559,8 @@ const handleStores = async () => {
       console.log(error);
       showMsg("error", "Error interno del servidor");
     }
+  } finally {
+    loading.hide();
   }
 };
 
@@ -593,11 +670,25 @@ const handleUpdate = async () => {
   }
 };
 
-const handleChangeStatus = async (id, status) => {
+const showModalConfirm = async (id, status) => {
   try {
-    let res = await storesStore.changeStatus(id, !status);
+    storeEdit.value = {
+      id: id,
+      status: status,
+    };
+    modalConfirm.value = true;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const handleChangeStatus = async () => {
+  try {
+    loading.show();
+    let res = await storesStore.changeStatus(storeEdit.value.id, !storeEdit.value.status);
     if (res.data.statusCode == 200) {
       showMsg("success", "Estado actualizado correctamente");
+      modalConfirm.value = false;
       handleStores();
     }
   } catch (error) {
@@ -609,6 +700,8 @@ const handleChangeStatus = async (id, status) => {
       console.error(error);
       showMsg("error", "Error interno del servidor");
     }
+  }finally {
+    loading.hide();
   }
 };
 

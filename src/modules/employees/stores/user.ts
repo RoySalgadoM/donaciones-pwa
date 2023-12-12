@@ -5,6 +5,7 @@ import APIFactory from "../../../config/api/APIFactory";
 export const useUsersStore = defineStore("users", () => {
   //states
   const users = ref([]);
+  const employees = ref({});
   const pagination = ref({});
 
   const addUser = async (payload) => {
@@ -53,6 +54,26 @@ export const useUsersStore = defineStore("users", () => {
     }
   };
 
+  const getEmployees = async (payload) => {
+    try {
+      let query = payload.query;
+      let response = await APIFactory.get({
+        path: "/employees",
+        setToken: true,
+        query,
+      });
+      employees.value = response.data.data.employees;
+      pagination.value = {
+        totalDocs: response.data.total,
+        limit: payload.query.limit || 0,
+        page: payload.query.page || 1,
+      };
+      return response.data.data;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const changeStatus = async (id, status) => {
     try {
       let response = await APIFactory.patch({
@@ -72,6 +93,7 @@ export const useUsersStore = defineStore("users", () => {
     users,
     pagination,
     getUsers,
+    getEmployees,
     addUser,
     changeStatus,
     updateUser

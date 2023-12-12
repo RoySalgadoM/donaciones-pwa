@@ -2,7 +2,7 @@
   <div class="min-h-screen flex items-center justify-center px-4 md:px-0">
     <div class="flex flex-wrap w-full max-w-4xl">
       <div
-        class="hidden md:block md:w-1/2 bg-white rounded-tl-lg rounded-bl-lg shadow-lg"
+        class="hidden md:block md:w-1/2 bg-white rounded-tl-lg rounded-bl-lg shadow-xl"
       >
         <img
           src="@/assets/images/ayuntamiento.jpg"
@@ -12,7 +12,7 @@
       </div>
 
       <div
-        class="w-full md:w-1/2 max-w-md mx-auto bg-white p-6 md:p-10 rounded-lg md:rounded-tl-none md:rounded-bl-none shadow-lg"
+        class="w-full md:w-1/2 max-w-md mx-auto bg-white p-6 md:p-10 rounded-lg md:rounded-tl-none md:rounded-bl-none shadow-xl"
       >
         <div class="space-y-6">
           <h2 class="text-3xl font-bold text-gray-900 text-center">
