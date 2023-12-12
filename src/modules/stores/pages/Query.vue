@@ -686,12 +686,14 @@ const handleChangeStatus = async () => {
   try {
     loading.show();
     let res = await storesStore.changeStatus(storeEdit.value.id, !storeEdit.value.status);
+    
     if (res.data.statusCode == 200) {
-      showMsg("success", "Estado actualizado correctamente");
+      showMsg("success", res.data.message);
       modalConfirm.value = false;
       handleStores();
     }
   } catch (error) {
+    console.log(error);
     if (error.code == "ERR_NETWORK") {
       showMsg("error", "Error de conexión");
     } else if (error.code == "ERR_BAD_REQUEST") {

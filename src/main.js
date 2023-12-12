@@ -22,6 +22,8 @@ import PaginationTable from "@/kernel/components/PaginationTable.vue";
 import Calendar from "@/kernel/components/Calendar.vue";
 import { notify } from "@/kernel/components/notify";
 import { loading } from "@/kernel/components/loading";
+import { registerSW } from "virtual:pwa-register";
+
 
 const app = createApp(App);
 
@@ -41,5 +43,14 @@ app.component("Calendar", Calendar);
 app.component("ContentSection", ContentSection);
 app.config.globalProperties.$notify = notify;
 app.config.globalProperties.$loading = loading;
+
+if ("serviceWorker" in navigator) {
+    registerSW({
+
+    });
+
+    
+    console.log("Service Worker Registered");
+}
 
 app.mount("#app");
