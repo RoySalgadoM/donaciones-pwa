@@ -32,11 +32,12 @@ function show(type, message) {
   const color = colorMap[type.toLowerCase()] || "";
   const fill = type.toLowerCase() === "success" ? "#22C55E" : "#EF4444";
   const icon = createIconSvg(type, fill, colorBgIcon);
+  let random = Math.floor(Math.random() * 1000);
 
   const description =
     message !== undefined && message !== null && message !== "" ? message : "";
 
-  const html = `<div id="notifyApp" class="fixed inset-x-0 top-0 flex items-start justify-center z-50 mt-2 animate-slide-up">
+  const html = `<div id="notifyApp${-random.toString()}" class="fixed inset-x-0 top-0 flex items-start justify-center z-50 mt-2 animate-slide-up">
     <div class= "flex items-center p-4 mb-4 text-md rounded-lg ${color}">
       ${icon}
       <div>
@@ -48,12 +49,12 @@ function show(type, message) {
   const newDiv = document.createElement("div");
   newDiv.innerHTML = html;
   document.body.appendChild(newDiv);
-  hide();
+  hide(`notifyApp${-random.toString()}`);
 }
 
-async function hide() {
-  const notifyApp = document.getElementById("notifyApp");
-  await new Promise((resolve) => setTimeout(resolve, 1500));
+async function hide(id) {
+  const notifyApp = document.getElementById(id);
+  await new Promise((resolve) => setTimeout(resolve, 2500));
   notifyApp.remove();
 }
 
