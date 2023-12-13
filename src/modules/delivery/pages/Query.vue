@@ -652,7 +652,7 @@
                 <Icon
                   name="pending"
                   textColor="text-warning"
-                  v-if="props.rowModified.status === 'Pendiente'"
+                  v-if="props.rowModified.status === 'Pendiente' && deliveryEdit.status !== 'Cancelada'"
                 ></Icon>
                 <Icon
                   name="pending"
