@@ -65,14 +65,14 @@
                 </Btn>
                 <Btn v-if="neighborhood.status" type="submit" color="bg-gray-200" hoverColor="hover:bg-gray-200" rounded
                   @click="
-                    handleChangeStatus(neighborhood.id, neighborhood.status)
+                    showModalConfirm(neighborhood.id, neighborhood.status)
                     ">
                   <template #icon>
                     <span class="material-icons">close</span>
                   </template>
                 </Btn>
                 <Btn v-else type="submit" color="bg-gray-200" hoverColor="hover:bg-gray-200" rounded @click="
-                  handleChangeStatus(neighborhood.id, neighborhood.status)
+                  showModalConfirm(neighborhood.id, neighborhood.status)
                   ">
                   <template #icon>
                     <span class="material-icons">done</span>
@@ -97,14 +97,14 @@
                 </Btn>
                 <Btn v-if="neighborhood.status" type="submit" color="bg-gray-200" hoverColor="hover:bg-gray-200" rounded
                   @click="
-                    handleChangeStatus(neighborhood.id, neighborhood.status)
+                    showModalConfirm(neighborhood.id, neighborhood.status)
                     ">
                   <template #icon>
                     <span class="material-icons">close</span>
                   </template>
                 </Btn>
                 <Btn v-else type="submit" color="bg-gray-200" hoverColor="hover:bg-gray-200" rounded @click="
-                  handleChangeStatus(neighborhood.id, neighborhood.status)
+                  showModalConfirm(neighborhood.id, neighborhood.status)
                   ">
                   <template #icon>
                     <span class="material-icons">done</span>
@@ -297,6 +297,37 @@
       </div>
     </template>
   </Dialog>
+  <Modal size="sm" :show="modalConfirm" @update:show="modalConfirm = $event">
+    <template #content>
+      <div class="flex flex-col justify-center items-center p-2">
+        <div>
+          <img src="@/assets/images/ask.png" width="120" height="120" alt="" />
+        </div>
+        <div class="text-center mb-6">
+          <span class="text-xl font-bold text-black">
+            ¿Estás seguro de cambiar el estado?
+          </span>
+        </div>
+        <div class="grid grid-cols-12 gap-1">
+          <div class="col-span-6">
+            <Btn color="bg-primary" hoverColor="hover:bg-primary" text="Sí" rounded @click="() => handleChangeStatus()">
+              <template #icon>
+                <span class="material-icons">check</span>
+              </template>
+            </Btn>
+          </div>
+          <div class="col-span-6">
+            <Btn type="button" color="bg-gray-200" hoverColor="hover:bg-gray-200" rounded text="No"
+              @click="() => (modalConfirm = false)">
+              <template #icon>
+                <span class="material-icons">close</span>
+              </template>
+            </Btn>
+          </div>
+        </div>
+      </div>
+    </template>
+  </Modal>
 </template>
       
 <script setup>
@@ -321,6 +352,8 @@ const pag = ref({
   rowsPerPage: 100,
   page: 1,
 });
+const modalConfirm = ref(false);
+
 
 const neighborhood = ref({
   name: null,
@@ -345,6 +378,19 @@ const editPhones = ref({
   phone: null,
   secondphone: null,
 });
+
+const showModalConfirm = async (id, status) => {
+  console.log(id, status);
+  try {
+    neighborhoodEdit.value = {
+      id: id,
+      status: status,
+    };
+    modalConfirm.value = true;
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 const handleNeighborhoods = async () => {
 
@@ -494,13 +540,15 @@ const handleUpdate = async () => {
   }
 };
 
-const handleChangeStatus = async (id, status) => {
+const handleChangeStatus = async () => {
+
   try {
     if (!isOnline) {
-      pendientRequest.push(() => neighborhoodStore.changeStatus(id, !status));
+      pendientRequest.push(() => neighborhoodStore.changeStatus(neighborhoodEdit.value.id, !neighborhoodEdit.value.status));
       showMsg("success", "La petición será enviada cuando se restablezca la conexión a Internet.");
+
     } else {
-      let res = await neighborhoodStore.changeStatus(id, !status);
+      let res = await neighborhoodStore.changeStatus(neighborhoodEdit.value.id, !neighborhoodEdit.value.status);
       if (res.data.statusCode == 200) {
         showMsg("success", "Estado actualizado correctamente");
         handleNeighborhoods();
@@ -516,6 +564,8 @@ const handleChangeStatus = async (id, status) => {
       console.error(error);
       showMsg("error", "Error interno del servidor");
     }
+  } finally {
+    modalConfirm.value = false;
   }
 };
 
