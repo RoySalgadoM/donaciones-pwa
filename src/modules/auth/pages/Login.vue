@@ -16,7 +16,7 @@
       >
         <div class="space-y-6">
           <h2 class="text-3xl font-bold text-gray-900 text-center">
-            Login
+            Inicio de sesión
           </h2>
           <p class="text-gray-600 text-center">
             Bienvenido! Inicia sesión para gestionar las donaciones.
