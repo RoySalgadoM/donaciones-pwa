@@ -11,6 +11,6 @@ RUN npm install -g serve
 COPY . .
 
 RUN npm run build
-RUN ls
+RUN ls dist
 
 CMD ["serve", "-d", "dist", "-p", "80"]
