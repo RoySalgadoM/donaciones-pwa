@@ -130,7 +130,7 @@
         <Form class="pt-5 mb-4" @formSubmit="handleAdd">
           <div class="flex flex-col gap-4">
             <div class="mb-4">
-              <Input required :label="'Nombre'" v-model.alfa="neighborhood.name" @clean="neighborhood.name = null" />
+              <Input required :label="'Nombre'" v-model.alfaNumChar="neighborhood.name" @clean="neighborhood.name = null" />
             </div>
           </div>
           <div class="flex flex-col gap-4">
@@ -190,7 +190,7 @@
         <Form class="pt-5 mb-4" @formSubmit="handleUpdate">
           <div class="flex flex-col gap-4">
             <div class="mb-4">
-              <Input required :label="'Nombre'" v-model.alfa="neighborhoodEdit.name"
+              <Input required :label="'Nombre'" v-model.alfaNumChar="neighborhoodEdit.name"
                 @clean="neighborhoodEdit.name = null" />
             </div>
           </div>

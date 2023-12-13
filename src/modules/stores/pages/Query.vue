@@ -121,7 +121,7 @@
         <Form class="pt-5 mb-4" @formSubmit="handleAdd">
           <div class="flex flex-col gap-4">
             <div class="mb-4">
-              <Input required :label="'Nombre'" v-model.alfa="store.name" @clean="store.name = null" />
+              <Input required :label="'Nombre'" v-model.alfaNumChar="store.name" @clean="store.name = null" />
             </div>
           </div>
           <div class="flex flex-col gap-4">
@@ -180,7 +180,7 @@
         <Form class="pt-5 mb-4" @formSubmit="handleUpdate">
           <div class="flex flex-col gap-4">
             <div class="mb-4">
-              <Input required :label="'Nombre'" v-model.alfa="storeEdit.name" @clean="storeEdit.name = null" />
+              <Input required :label="'Nombre'" v-model.alfaNumChar="storeEdit.name" @clean="storeEdit.name = null" />
             </div>
           </div>
           <div class="flex flex-col gap-4">
@@ -434,7 +434,6 @@ const handleAdd = async () => {
       name: null,
       address: null,
       nameLinkPerson: null,
-      status: null,
       phones: [],
     };
     phones.value = {
