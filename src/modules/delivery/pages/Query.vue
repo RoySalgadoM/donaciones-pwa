@@ -612,8 +612,8 @@
           v-if="
             (deliveryEdit.status === 'Cancelada' ||
               deliveryEdit.status === 'Finalizada') &&
-            deliveryEdit.annexes.photos &&
-            deliveryEdit.annexes.photos.length > 0
+            deliveryEdit.generalAnnexes.photos &&
+            deliveryEdit.generalAnnexes.photos.length > 0
           "
           class="col-span-12 mb-1"
         >
@@ -626,7 +626,7 @@
             >
               <!-- Existing Images -->
               <div
-                v-for="(image, index) in deliveryEdit.annexes.photos"
+                v-for="(image, index) in deliveryEdit.generalAnnexes.photos"
                 :key="index"
                 class="relative"
               >
