@@ -602,8 +602,8 @@
               >Comentarios de cancelación</label
             >
             <label class="text-black dark:text-white text-lg font-title">{{
-              deliveryEdit.annexes
-                ? deliveryEdit.annexes.commentary
+              deliveryEdit.generalAnnexes
+                ? deliveryEdit.generalAnnexes.commentary
                 : "Comentarios"
             }}</label>
           </div>
@@ -912,7 +912,7 @@ const deliveryEdit = ref({
   date: null,
   user: null,
   routes: [],
-  annexes: {
+  generalAnnexes: {
     commentary: null,
     photos: [],
   },
@@ -1357,9 +1357,9 @@ const selectedRow = async (delivery) => {
       user: delivery.user,
       status: delivery.status,
       routes: routesAux,
-      annexes: {
-        commentary: delivery.annexes ? delivery.annexes.commentary : null,
-        photos: delivery.annexes ? delivery.annexes.photos : [],
+      generalAnnexes: {
+        commentary: delivery.generalAnnexes ? delivery.generalAnnexes.commentary : null,
+        photos: delivery.generalAnnexes ? delivery.generalAnnexes.photos : [],
       },
     };
     modalInfo.value = true;
