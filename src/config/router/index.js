@@ -8,6 +8,7 @@ import Stores from "@/modules/stores/pages/Query.vue";
 import Neighborhoods from "@/modules/neighborhood/pages/Query.vue";
 import Pickups from "@/modules/pickups/pages/Query.vue";
 import Deliveries from "@/modules/delivery/pages/Query.vue";
+import Profile from "@/modules/profile/pages/Query.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -78,6 +79,16 @@ const router = createRouter({
               path: "query",
               name: "queryDeliveries",
               component: Deliveries,
+            },
+          ],
+        },
+        {
+          path: "perfil",
+          children: [
+            {
+              path: "query",
+              name: "queryProfile",
+              component: Profile,
             },
           ],
         },

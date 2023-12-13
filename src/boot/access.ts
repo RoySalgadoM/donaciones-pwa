@@ -5,7 +5,9 @@ import { notify } from "../kernel/components/notify";
 router.beforeResolve(async (to, from, next) => {
   const accessAuth = useAccessAuthStore();
   try {
-    console.log("to", to);
+    if (to.path === "/api") {
+      next();
+    }
     await accessAuth.setValidation();
     if (to.meta.privilege) {
       if (accessAuth.isValid) {
@@ -16,9 +18,8 @@ router.beforeResolve(async (to, from, next) => {
       }
     } else {
       if (accessAuth.isValid) {
-        console.log("from", from);
-        next(from.name ? { name: from.name } : { name: "queryUser" }); 
-      }else{
+        next(from.name ? { name: from.name } : { name: "queryUser" });
+      } else {
         next();
       }
     }
