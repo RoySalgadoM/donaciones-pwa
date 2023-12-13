@@ -16,6 +16,7 @@ COPY . .
 # Ejecutar el comando de construcción
 RUN npm run build
 RUN ls
+RUN pwd
 
 # Segundo bloque para la imagen final
 FROM nginx:alpine
