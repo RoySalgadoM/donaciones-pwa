@@ -127,7 +127,7 @@
     </template>
     <template #content>
       <div class="flex items-center">
-        <Form class="pt-5 mb-4" @formSubmit="handleAdd">
+        <Form class="pt-5 mb-4" @formSubmit="handleAdd" ref="formAdd">
           <div class="flex flex-col gap-4">
             <div class="mb-4">
               <Input required :label="'Nombre'" v-model.alfaNumChar="neighborhood.name" @clean="neighborhood.name = null" />
@@ -147,15 +147,15 @@
           </div>
           <div class="flex flex-col sm:flex-row sm:gap-4">
             <div class="mb-4">
-              <Input required noWhiteSpace :label="'Teléfono'" v-model.integer="phones.phone" @clean="phones.phone = null"
+              <Input required noWhiteSpace :label="'Teléfono'" v-model="phones.phone" @clean="phones.phone = null"
                 :rules="[
-                  (v) => v.length == 10 || 'El teléfono debe tener 10 dígitos',
+                  (val) => val.length == 10 || 'El teléfono debe tener 10 dígitos',
                 ]" />
             </div>
             <div class="mb-4">
-              <Input noWhiteSpace :label="'Teléfono respaldo'" v-model.integer="phones.secondphone"
+              <Input noWhiteSpace :label="'Teléfono respaldo'" v-model="phones.secondphone"
                 @clean="phones.secondphone = null" :rules="[
-                  (v) => v.length == 10 || 'El teléfono debe tener 10 dígitos',
+                  (val) => val == null || val === '' ? true : val.length == 10 || 'El teléfono debe tener 10 dígitos',
                 ]" />
             </div>
           </div>
@@ -216,7 +216,7 @@
             <div class="mb-4">
               <Input noWhiteSpace :label="'Teléfono respaldo'" v-model.integer="editPhones.secondphone"
                 @clean="editPhones.secondphone = null" :rules="[
-                  (v) => v.length == 10 || 'El teléfono debe tener 10 dígitos',
+                  (val) => val == null || val === '' ? true : val.length == 10 || 'El teléfono debe tener 10 dígitos',
                 ]" />
             </div>
           </div>
@@ -344,6 +344,7 @@ const modalEdit = ref(false);
 const modalInfo = ref(false);
 const neighborhoodStore = useNeighborhoodStore();
 const { neighborhoods } = storeToRefs(neighborhoodStore);
+const formAdd = ref(null);
 
 let pendientRequest = [];
 let isOnline = navigator.onLine;
@@ -444,7 +445,6 @@ const handleAdd = async () => {
         phones: aux,
       },
     };
-    delete payload.body.status;
     if (!isOnline) {
       pendientRequest.push(() => neighborhoodStore.addNeighborhood(payload))
       showMsg("success", "La petición será enviada cuando se restablezca la conexión a Internet.");
@@ -467,7 +467,6 @@ const handleAdd = async () => {
       secondphone: null,
     };
     handleNeighborhoods();
-
   } catch (error) {
     if (error.code == "ERR_NETWORK") {
       showMsg("error", "Error de conexión");

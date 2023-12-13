@@ -145,7 +145,7 @@
             <div class="mb-4">
               <Input noWhiteSpace :label="'Teléfono respaldo'" v-model.integer="phones.secondphone"
                 @clean="phones.secondphone = null" :rules="[
-                  (v) => v.length == 10 || 'El teléfono debe tener 10 dígitos',
+                  (val) => val == null || val === '' ? true : val.length == 10 || 'El teléfono debe tener 10 dígitos',
                 ]" />
             </div>
           </div>
@@ -204,7 +204,7 @@
             <div class="mb-4">
               <Input noWhiteSpace :label="'Teléfono respaldo'" v-model.integer="editPhones.secondphone"
                 @clean="editPhones.secondphone = null" :rules="[
-                  (v) => v.length == 10 || 'El teléfono debe tener 10 dígitos',
+                  (val) => val == null || val === '' ? true : val.length == 10 || 'El teléfono debe tener 10 dígitos',
                 ]" />
             </div>
           </div>
