@@ -689,23 +689,108 @@
                   v-if="pickupEdit.status === 'En proceso' || pickupEdit.status === 'Pendiente'"
                 ></Icon>
                 <Icon
-                  name="info"
-                  textColor="text-secondary"
-                  @click="showModalInfoRoute(props.rowModified)"
-                  v-if="
-                    props.rowModified.status === 'Finalizada' ||
-                    props.rowModified.status === 'Cancelada'
-                  "
+                  name="pending"
+                  textColor="text-danger"
+                  v-if="pickupEdit.status === 'Cancelada'"
                 ></Icon>
                 <Icon
                   name="pending"
-                  textColor="text-primary"
-                  title="En proceso"
-                  v-if="props.rowModified.status === 'En proceso'"
+                  textColor="text-secondary"
+                  @click="showModalInfoProduct(props.rowModified)"
+                  v-if="(props.rowModified.recolected || !props.rowModified.recolected) && pickupEdit.status === 'Finalizada'"
                 ></Icon>
               </div>
             </template>
           </Table>
+        </div>
+      </div>
+    </template>
+  </Dialog>
+
+  <!-- Modal para ver información de producto de recolección -->
+  <Dialog :show="modalInfoProduct" @update:show="() => {modalInfoProduct = $event; modalInfo = true}">
+    <template #title>
+      <div class="flex justify-center">
+        <h2 class="text-2xl font-bold text-gray-900">Información de producto</h2>
+      </div>
+    </template> 
+    <template #content>
+      <div
+        class="grid grid-cols-12 items-center justify-center w-5/6 gap-6 mt-5 mb-5"
+      >
+        <div class="col-span-12 sm:col-span-6 mb-1">
+          <div class="flex flex-col flex-grow">
+            <label class="text-primary text-md font-title">Nombre</label>
+            <label class="text-black dark:text-white text-lg font-title">{{
+              productSelected ? productSelected.product.product.name : "Nombre"
+            }}</label>
+          </div>
+        </div>
+        <div class="col-span-6 mb-1">
+          <div class="flex flex-col flex-grow">
+            <label class="text-primary text-md font-title">Fecha de recolección</label>
+            <label class="text-black dark:text-white text-lg font-title">{{
+              productSelected ? pickupEdit.date.substring(0, 10) : "Fecha"
+            }}</label>
+          </div>
+        </div>
+        <div class="col-span-6 mb-1">
+          <div class="flex flex-col">
+            <label class="text-primary text-md font-title">Estado</label>
+            <div class="min-w-0">
+              <span
+                v-if="productSelected.product.product.recolected"
+                class="bg-green-200 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded"
+              >
+                Recolectado
+              </span>
+              <span
+                v-else
+                class="bg-green-200 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded"
+              >
+                No recolectado
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="col-span-12 mb-1"
+        >
+          <div class="flex flex-col flex-grow">
+            <label class="text-primary text-md font-title"
+              >Comentarios</label
+            >
+            <label class="text-black dark:text-white text-lg font-title">{{
+             productSelected.product.product.annexes
+                ? productSelected.product.product.annexes.commentary
+                : "Comentarios"
+            }}</label>
+          </div>
+        </div>
+        <div
+          v-if="productSelected.product.product.annexes.photos && productSelected.product.product.annexes.photos.length > 0
+          "
+          class="col-span-12 mb-1"
+        >
+          <div class="flex flex-col flex-grow">
+            <label class="text-primary text-md font-title mb-2"
+              >Evidencia</label
+            >
+            <div
+              class="flex flex-wrap justify-center sm:justify-start gap-6 px-8"
+            >
+              <!-- Existing Images -->
+              <div
+                v-for="(image, index) in productSelected.product.product.annexes.photos"
+                :key="index"
+                class="relative"
+              >
+                <img
+                  :src="image"
+                  class="w-20 h-20 sm:w-32 sm:h-32 object-cover"
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </template>
@@ -768,12 +853,12 @@ import { loading } from "@/kernel/components/loading";
 const showMsg = inject("showMsg", () => {});
 const timeout = ref(null);
 const filter = ref("");
-const dataTableRef = ref(null);
 const modalAdd = ref(false);
 const modalEdit = ref(false);
 const modalInfo = ref(false);
 const modalCancel = ref(false);
 const modalConfirm = ref(false);
+const modalInfoProduct = ref(false);
 const storesStore = useStoresStore();
 const usersStore = useUsersStore();
 const productsStore = useProductsStore();
@@ -787,6 +872,7 @@ const selectProducts = ref(null);
 const selectProductsEdit = ref(null);
 
 const selectedProduct = ref(null);
+const productSelected = ref({});
 const products = reactive([]);
 const productsEdit = reactive([]);
 const product = ref({
@@ -831,8 +917,8 @@ const columnsInfo = computed(() => [
   },
   {
     title: "Nombre",
-    field: "product",
-    format: (val) => val.name,
+    field: "name",
+    format: (val) => val,
     required: true,
   },
   {
@@ -844,7 +930,7 @@ const columnsInfo = computed(() => [
   {
     title: "Estado",
     field: "recolected",
-    format: (val) => pickupEdit.status === "En proceso" ? pickupEdit.status : val ? "Recolectado" : "No recolectado",
+    format: (val) => val ? "Recolectado" : "No recolectado",
     required: true,
   },
   {
@@ -1306,20 +1392,13 @@ const handleCancel = async () => {
 
 const selectedRow = async (pickup) => {
   try {
-    console.log("products", pickup);
     let aux = 0;
     let productsAux = pickup.products.map((item) => {
       aux = aux + 1;
       return {
         index: aux,
-        product: {
-          id: item.id,
-          name: item.name,
-          annexes: {
-            commentary: item.annexes ? item.annexes.commentary : null,
-            photos: item.annexes ? item.annexes.photos : [],
-          }
-        },
+        product: item,
+        name: item.name,
         recolected: item.recolected,
         quantity: item.quantity,
       };
@@ -1340,7 +1419,23 @@ const selectedRow = async (pickup) => {
         photos: pickup.generalAnnexes ? pickup.generalAnnexes.photos : [],
       },
     };
+    console.log("products pickupEdit", pickupEdit.value.products);
     modalInfo.value = true;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const showModalInfoProduct = async (product) => {
+  try {
+    console.log("product", product);
+    productSelected.value = {
+      pickup: pickup,
+      product: product,
+    };
+    console.log("productSelected", productSelected);
+    modalInfo.value = false;
+    modalInfoProduct.value = true;
   } catch (error) {
     console.log(error);
   }
