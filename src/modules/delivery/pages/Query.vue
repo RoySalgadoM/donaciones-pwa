@@ -612,7 +612,8 @@
           v-if="
             (deliveryEdit.status === 'Cancelada' ||
               deliveryEdit.status === 'Finalizada') &&
-            deliveryEdit.annexes.photos && deliveryEdit.annexes.photos.length > 0
+            deliveryEdit.annexes.photos &&
+            deliveryEdit.annexes.photos.length > 0
           "
           class="col-span-12 mb-1"
         >
@@ -658,7 +659,10 @@
                   textColor="text-secondary"
                   title="Pendiente"
                   @click="showModalInfoRoute(props.rowModified)"
-                  v-if="props.rowModified.status === 'Finalizada' || props.rowModified.status === 'Cancelada'"
+                  v-if="
+                    props.rowModified.status === 'Finalizada' ||
+                    props.rowModified.status === 'Cancelada'
+                  "
                 ></Icon>
                 <Icon
                   name="pending"
@@ -674,13 +678,21 @@
     </template>
   </Dialog>
 
-   <!-- Modal para ver información de ruta de reparto -->
-   <Dialog :show="modalInfoRoute" @update:show="() => {modalInfoRoute = $event; modalInfo = true}">
+  <!-- Modal para ver información de ruta de reparto -->
+  <Dialog
+    :show="modalInfoRoute"
+    @update:show="
+      () => {
+        modalInfoRoute = $event;
+        modalInfo = true;
+      }
+    "
+  >
     <template #title>
       <div class="flex justify-center">
         <h2 class="text-2xl font-bold text-gray-900">Información de ruta</h2>
       </div>
-    </template> 
+    </template>
     <template #content>
       <div
         class="grid grid-cols-12 items-center justify-center w-5/6 gap-6 mt-5 mb-5"
@@ -701,12 +713,9 @@
             }}</label>
           </div>
         </div>
-        <div class="col-span-12 mb-1"
-        >
+        <div class="col-span-12 mb-1">
           <div class="flex flex-col flex-grow">
-            <label class="text-primary text-md font-title"
-              >Comentarios</label
-            >
+            <label class="text-primary text-md font-title">Comentarios</label>
             <label class="text-black dark:text-white text-lg font-title">{{
               routeSelected.route.annexes
                 ? routeSelected.route.annexes.commentary
@@ -715,7 +724,9 @@
           </div>
         </div>
         <div
-          v-if="routeSelected.route.annexes && routeSelected.route.annexes.photos.length > 0
+          v-if="
+            routeSelected.route.annexes &&
+            routeSelected.route.annexes.photos.length > 0
           "
           class="col-span-12 mb-1"
         >
@@ -792,7 +803,6 @@
 <script setup>
 import { inject, ref, onMounted, reactive, computed } from "vue";
 import { useUsersStore } from "@/modules/employees/stores/user";
-import { usePickupsStore } from "@/modules/pickups/stores/pickup";
 import { useDeliveryStore } from "@/modules/delivery/stores/delivery";
 import { useNeighborhoodStore } from "@/modules/neighborhood/stores/neighborhood";
 import { storeToRefs } from "pinia";
@@ -811,6 +821,9 @@ const usersStore = useUsersStore();
 const deliveryStore = useDeliveryStore();
 const neighborhoodsStore = useNeighborhoodStore();
 const { deliveries } = storeToRefs(deliveryStore);
+
+let pendientRequest = [];
+let isOnline = navigator.onLine;
 
 //selects
 const selectUsers = ref(null);
@@ -916,7 +929,6 @@ function getFormattedDate() {
   const year = date.getFullYear();
   const month = (date.getMonth() + 1).toString().padStart(2, "0");
   const day = date.getDate().toString().padStart(2, "0");
-  console.log(`${year}-${month}-${day}`);
   return `${year}-${month}-${day}`;
 }
 
@@ -932,7 +944,6 @@ const handleDeliveries = async () => {
       },
     };
     let res = await deliveryStore.getDeliveries(payload);
-    console.log("deliveries", deliveries);
   } catch (error) {
     if (error.code == "ERR_NETWORK") {
       showMsg("error", "Error de conexión");
@@ -953,7 +964,6 @@ const showUsers = async () => {
       },
     };
     let res = await usersStore.getEmployees(payload);
-    console.log(res);
     if (res.employees) {
       selectUsers.value = res.employees.map((item) => {
         return {
@@ -1015,8 +1025,6 @@ const computedNeighborhoods = computed(() => {
 });
 
 const computedNeighborhoodsEdit = computed(() => {
-  console.log("neighborhoodsEdit", neighborhoodsEdit);
-  console.log("selectNeighborhoodsEdit", selectNeighborhoodsEdit);
   selectNeighborhoodsEdit.value = selectNeighborhoodsEdit.value.filter(
     (item) => {
       return !neighborhoodsEdit.value.some((neighborhood) => {
@@ -1093,7 +1101,6 @@ const handleDeleteNeighborhoodEdit = (neighborhood) => {
     let aux = neighborhoodsEdit.value.filter((item) => {
       return item.index == selectedNeighborhoodEdit.value.index;
     });
-    console.log("aux", aux);
     selectNeighborhoodsEdit.value = [
       ...selectNeighborhoodsEdit.value,
       aux[0].neighborhood,
@@ -1148,7 +1155,6 @@ const handleAdd = async () => {
     let aux = neighborhoods.map((item) => {
       return item.neighborhood.id;
     });
-    console.log("aux", aux);
     let payload = {
       body: {
         name: delivery.value.name,
@@ -1157,13 +1163,30 @@ const handleAdd = async () => {
         routes: aux,
       },
     };
-    console.log(payload);
-    let res = await deliveryStore.addDelivery(payload);
-    if (res.data.statusCode == 200) {
-      showMsg("success", "Recolección agregada correctamente");
+
+    if (!isOnline) {
+      pendientRequest.push(() => deliveryStore.addDelivery(payload));
+      showMsg(
+        "success",
+        "La petición será enviada cuando se restablezca la conexión a Internet."
+      );
       modalAdd.value = false;
-      handleDeliveries();
+    } else {
+      let res = await deliveryStore.addDelivery(payload);
+      if (res.data.statusCode == 200) {
+        showMsg("success", "Recolección agregada correctamente");
+        modalAdd.value = false;
+        handleDeliveries();
+      }
     }
+
+    neighborhoods.length = 0;
+    delivery.value = {
+      name: null,
+      date: null,
+      user: null,
+      routes: [],
+    };
   } catch (error) {
     if (error.code == "ERR_NETWORK") {
       showMsg("error", "Error de conexión");
@@ -1180,7 +1203,6 @@ const handleAdd = async () => {
 
 const showModalEdit = async (delivery) => {
   try {
-    console.log("delivery", delivery);
     let aux = 0;
     let neighborhoodsAux = delivery.routes.map((item) => {
       aux = aux + 1;
@@ -1201,7 +1223,6 @@ const showModalEdit = async (delivery) => {
       routes: neighborhoodsAux,
     };
     neighborhoodsEdit.value = neighborhoodsAux;
-    console.log("neighborhoodsEdit", neighborhoodsEdit);
     modalEdit.value = true;
   } catch (error) {
     console.error(error);
@@ -1217,7 +1238,6 @@ const handleUpdate = async () => {
     let aux = neighborhoodsEdit.value.map((item) => {
       return item.neighborhood.id;
     });
-    console.log("aux", aux);
     let payload = {
       id: deliveryEdit.value.id,
       body: {
@@ -1227,12 +1247,21 @@ const handleUpdate = async () => {
         routes: aux,
       },
     };
-    console.log(payload);
-    let res = await deliveryStore.updateDelivery(payload);
-    if (res.data.statusCode == 200) {
-      showMsg("success", "Reparto modificado correctamente");
+
+    if (!isOnline) {
+      pendientRequest.push(() => deliveryStore.updateDelivery(payload));
+      showMsg(
+        "success",
+        "La petición será enviada cuando se restablezca la conexión a Internet."
+      );
       modalEdit.value = false;
-      handleDeliveries();
+    } else {
+      let res = await deliveryStore.updateDelivery(payload);
+      if (res.data.statusCode == 200) {
+        showMsg("success", "Reparto modificado correctamente");
+        modalEdit.value = false;
+        handleDeliveries();
+      }
     }
   } catch (error) {
     if (error.code == "ERR_NETWORK") {
@@ -1263,7 +1292,6 @@ const showModalCancel = async (delivery) => {
 
 const handleCancel = async () => {
   try {
-    console.log(cancel.value);
     let payload = {
       id: cancel.value.id,
       body: {
@@ -1278,12 +1306,21 @@ const handleCancel = async () => {
         photos: images.value,
       };
     }
-    console.log("payload", payload);
-    let res = await deliveryStore.cancelDelivery(payload);
-    if (res.data.statusCode == 200) {
-      showMsg("success", "Recolección cancelada correctamente");
+
+    if (!isOnline) {
+      pendientRequest.push(() => deliveryStore.cancelDelivery(payload));
+      showMsg(
+        "success",
+        "La petición será enviada cuando se restablezca la conexión a Internet."
+      );
       modalCancel.value = false;
-      handleDeliveries();
+    } else {
+      let res = await deliveryStore.cancelDelivery(payload);
+      if (res.data.statusCode == 200) {
+        showMsg("success", "Recolección cancelada correctamente");
+        modalCancel.value = false;
+        handleDeliveries();
+      }
     }
   } catch (error) {
     if (error.code == "ERR_NETWORK") {
@@ -1307,7 +1344,7 @@ const selectedRow = async (delivery) => {
         id: item._id,
         name: item.name,
         status: item.status,
-        route: item
+        route: item,
       };
     });
 
@@ -1323,7 +1360,6 @@ const selectedRow = async (delivery) => {
         photos: delivery.annexes ? delivery.annexes.photos : [],
       },
     };
-    console.log("deliveryEdit", deliveryEdit.value);
     modalInfo.value = true;
   } catch (error) {
     console.log(error);
@@ -1332,8 +1368,6 @@ const selectedRow = async (delivery) => {
 
 const showModalInfoRoute = async (route) => {
   try {
-    console.log("route", route);
-    console.log("deliveryEdit", deliveryEdit.value);
     routeSelected.value = route;
     modalInfo.value = false;
     modalInfoRoute.value = true;
@@ -1362,7 +1396,26 @@ const removeImage = (index) => {
   images.value.splice(index, 1);
 };
 
+const showOnlineAlert = async () => {
+  showMsg("success", "La conexión a Internet ha sido restablecida.");
+  isOnline = true;
+  await Promise.all(
+    pendientRequest.map(async (request) => {
+      await request();
+    })
+  );
+  pendientRequest = [];
+  await handleDeliveries();
+};
+
+const showOfflineAlert = () => {
+  showMsg("error", "La conexión a Internet se ha perdido.");
+  isOnline = false;
+};
+
 onMounted(() => {
+  window.addEventListener("online", showOnlineAlert);
+  window.addEventListener("offline", showOfflineAlert);
   handleDeliveries();
   showUsers();
   showNeighborhoods();

@@ -252,7 +252,6 @@ const handleProducts = async () => {
       loading.hide();
     }
   }
-
 };
 
 const showModalConfirm = async (id, status) => {

@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center px-4 md:px-0">
+  <div class="min-h-screen flex items-center justify-center px-4 md:px-0 bg-gradient-to-r from-primary to-secondary">
     <div class="flex flex-wrap w-full max-w-4xl">
       <div
         class="hidden md:block md:w-1/2 bg-white rounded-tl-lg rounded-bl-lg shadow-xl"
@@ -55,7 +55,7 @@
           </Form>
           <div class="text-sm text-center">
             ¿Olvidaste tu contraseña?
-            <a href="#" class="text-blue-500">Recuperar</a>
+            <a href="recuperar" class="text-blue-500">Recuperar</a>
           </div>
         </div>
       </div>
@@ -95,5 +95,9 @@ const handleLogin = async () => {
       showMsg("error", "Error interno del servidor");
     }
   }
+};
+
+const handleRecover = () => {
+  router.push({ name: "recuperar" });
 };
 </script>

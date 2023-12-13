@@ -9,6 +9,7 @@ import Neighborhoods from "@/modules/neighborhood/pages/Query.vue";
 import Pickups from "@/modules/pickups/pages/Query.vue";
 import Deliveries from "@/modules/delivery/pages/Query.vue";
 import Profile from "@/modules/profile/pages/Query.vue";
+import RecoverPassword from "@/modules/auth/pages/RecoverPassword.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,6 +18,11 @@ const router = createRouter({
       path: "/",
       name: "Login",
       component: Login,
+    },
+    {
+      path: "/recuperar",
+      name: "RecoverPassword",
+      component: RecoverPassword,
     },
     {
       path: "/donaciones",

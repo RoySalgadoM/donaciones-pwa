@@ -542,7 +542,6 @@ const handleChangeStatus = async () => {
     }
 
   } catch (error) {
-    console.log(error);
     if (error.code == "ERR_NETWORK") {
       showMsg("error", "Error de conexión");
     } else if (error.code == "ERR_BAD_REQUEST") {

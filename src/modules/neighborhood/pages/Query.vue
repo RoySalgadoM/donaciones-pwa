@@ -518,7 +518,6 @@ const handleUpdate = async () => {
       pendientRequest.push(() => neighborhoodStore.updateNeighborhood(payload))
       showMsg("success", "La petición será enviada cuando se restablezca la conexión a Internet.");
       modalEdit.value = false;
-      handleNeighborhoods();
     } else {
       let res = await neighborhoodStore.updateNeighborhood(payload);
       if (res.data.statusCode == 200) {
@@ -546,7 +545,6 @@ const handleChangeStatus = async () => {
     if (!isOnline) {
       pendientRequest.push(() => neighborhoodStore.changeStatus(neighborhoodEdit.value.id, !neighborhoodEdit.value.status));
       showMsg("success", "La petición será enviada cuando se restablezca la conexión a Internet.");
-
     } else {
       let res = await neighborhoodStore.changeStatus(neighborhoodEdit.value.id, !neighborhoodEdit.value.status);
       if (res.data.statusCode == 200) {

@@ -2,29 +2,96 @@
   <ContentSection>
     <template #title> Perfil </template>
     <template #content>
-      <div class="grid grid-cols-12 gap-4">
-        <div class="mb-4 col-span-3">
+      <div class="grid grid-cols-12">
+        <div class="col-span-12 md:col-span-3">
           <div class="flex flex-row items-center justify-center">
-            <span class="material-icons text-primary" style="font-size: 10rem"
+            <span class="material-icons text-primary" style="font-size: 8rem"
               >account_circle</span
             >
           </div>
         </div>
-        <div class="mb-4 col-span-9">
-          <div class="text-xl font-semibold break-words truncate mb-2">
+        <div class="col-span-12 md:col-span-9">
+          <div
+            class="text-lg md:text-xl font-semibold break-words truncate mb-2"
+          >
             {{ "Miriam Guadalupe Saucedo Bustamante" }}
           </div>
-          <div class="text-lg font-normal break-words truncate mb-2">
+          <div class="text-md md:text-lg font-normal break-words truncate mb-2">
             {{ "Correo electrónico: miriam@gmail.com" }}
           </div>
-          <div class="text-lg font-normal break-words truncate mb-2">
+          <div class="text-md md:text-lg font-normal break-words truncate mb-2">
             {{ "Teléfono: 7771888263" }}
           </div>
-          <div class="text-lg font-normal break-words truncate mb-2">
-            {{ "Teléfono: 7771888263" }}
+          <div class="text-md md:text-lg font-normal break-words truncate mb-2">
+            {{ "Rol: Administrador" }}
           </div>
         </div>
       </div>
+      <hr
+        class="w-48 h-1 mx-auto my-2 bg-gray-100 border-0 rounded md:my-5 dark:bg-gray-700"
+      />
+      <Form @formSubmit="changePassword">
+        <div class="grid grid-cols-12 gap-4 lg:mx-40">
+          <div class="mb-4 col-span-12">
+            <div class="flex flex-row items-center justify-center">
+              <div
+                class="text-lg md:text-xl font-semibold break-words truncate mb-2"
+              >
+                {{ "Cambiar contraseña" }}
+              </div>
+            </div>
+          </div>
+          <div class="mb-4 col-span-12 sm:col-span-6 md:col-span-4">
+            <Input
+              required
+              noWhiteSpace
+              :label="'Contraseña actual'"
+              v-model="user.password"
+              @clean="user.password = null"
+              type="password"
+            />
+          </div>
+          <div class="mb-4 col-span-12 sm:col-span-6 md:col-span-4">
+            <Input
+              required
+              noWhiteSpace
+              :label="'Contraseña nueva'"
+              v-model="user.newPassword"
+              @clean="user.newPassword = null"
+              type="password"
+            />
+          </div>
+          <div class="mb-4 col-span-12 sm:col-span-6 md:col-span-4">
+            <Input
+              required
+              noWhiteSpace
+              :label="'Confirmar contraseña'"
+              v-model="confirmPassword"
+              @clean="confirmPassword = null"
+              :rules="[
+                (v) => v === user.newPassword || 'Las contraseñas no coinciden',
+              ]"
+              type="password"
+            />
+          </div>
+          <div
+            class="mb-4 col-span-12 sm:col-span-6 md:col-span-4 md:col-start-9"
+          >
+            <div class="flex items-center justify-end">
+              <Btn
+                color="bg-primary"
+                hoverColor="hover:bg-primary"
+                text="Guardar"
+                rounded
+              >
+                <template #icon>
+                  <span class="material-icons">save</span>
+                </template>
+              </Btn>
+            </div>
+          </div>
+        </div>
+      </Form>
     </template>
   </ContentSection>
 </template>
@@ -33,48 +100,44 @@
 import { inject } from "vue";
 import { ref, onMounted } from "vue";
 import { useProductsStore } from "@/modules/products/stores/product";
+import { useProfileStore } from "../stores/profile";
 import { storeToRefs } from "pinia";
 import { loading } from "@/kernel/components/loading";
 
 const showMsg = inject("showMsg", () => {});
-const timeout = ref(null);
-const filter = ref("");
-const modalAdd = ref(false);
-const modalEdit = ref(false);
-const modalInfo = ref(false);
 const productsStore = useProductsStore();
-const { products, pagination } = storeToRefs(productsStore);
+const profileStore = useProfileStore();
 
-const product = ref({
-  name: "",
+const user = ref({
+  password: null,
+  newPassword: null,
 });
 
-const productEdit = ref({
-  id: "",
-  name: "",
-});
+const confirmPassword = ref(null);
 
-const pag = ref({
-  rowsPerPage: 100,
-  page: 1,
-});
-
-const handleProducts = async () => {
+const changePassword = async () => {
   try {
     loading.show();
     let payload = {
-      query: {
-        filter: filter.value,
-        status: "all",
-        ...pag.value,
-      },
+      body: {
+        password: user.value.password,
+        newPassword: user.value.newPassword,
+      }
     };
-    let res = await productsStore.getProducts(payload);
+    let res = await profileStore.changePassword(payload);
+    if (res.data.statusCode === 200) {
+      showMsg("success",res.data.message);
+      user.value.password = null;
+      user.value.newPassword = null;
+      confirmPassword.value = null;
+    }
   } catch (error) {
     if (error.code == "ERR_NETWORK") {
       showMsg("error", "Error de conexión");
+    } else if (error.code == "ERR_BAD_REQUEST") {
+      showMsg("error", error.response.data.message);
     } else {
-      console.log(error);
+      console.error(error);
       showMsg("error", "Error interno del servidor");
     }
   } finally {
@@ -82,104 +145,5 @@ const handleProducts = async () => {
   }
 };
 
-const handleSearchInput = async (props) => {
-  try {
-    clearTimeout(timeout.value);
-    timeout.value = setTimeout(async () => {
-      handleProducts();
-    }, 900);
-  } catch (error) {
-    showMsg("error", error);
-  }
-};
-
-const showModalEdit = async (product) => {
-  try {
-    productEdit.value = {
-      id: product.id,
-      name: product.name,
-    };
-    modalEdit.value = true;
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-const handleUpdate = async () => {
-  try {
-    let payload = {
-      id: productEdit.value.id,
-      body: {
-        name: productEdit.value.name,
-      },
-    };
-    let res = await productsStore.updateProduct(payload);
-    if (res.data.statusCode == 200) {
-      showMsg("success", "Producto actualizado correctamente");
-      modalEdit.value = false;
-      handleProducts();
-    }
-  } catch (error) {
-    if (error.code == "ERR_NETWORK") {
-      showMsg("error", "Error de conexión");
-    } else if (error.code == "ERR_BAD_REQUEST") {
-      showMsg("error", error.response.data.message);
-    } else {
-      console.error(error);
-      showMsg("error", "Error interno del servidor");
-    }
-  }
-};
-
-const handleAdd = async () => {
-  try {
-    console.log(product.value);
-    let payload = {
-      body: {
-        ...product.value,
-      },
-    };
-    let res = await productsStore.addProduct(payload);
-    if (res.data.statusCode == 200) {
-      showMsg("success", "Producto agregado correctamente");
-      modalAdd.value = false;
-      product.value = {
-        name: "",
-      };
-      handleProducts();
-    }
-  } catch (error) {
-    if (error.code == "ERR_NETWORK") {
-      showMsg("error", "Error de conexión");
-    } else if (error.code == "ERR_BAD_REQUEST") {
-      showMsg("error", error.response.data.message);
-    } else {
-      console.error(error);
-      showMsg("error", "Error interno del servidor");
-    }
-  }
-};
-
-const handleChangeStatus = async (id, status) => {
-  try {
-    let res = await productsStore.changeStatus(id, !status);
-    if (res.data.statusCode == 200) {
-      showMsg("success", "Estado actualizado correctamente");
-      handleProducts();
-    }
-  } catch (error) {
-    if (error.code == "ERR_NETWORK") {
-      showMsg("error", "Error de conexión");
-    } else if (error.code == "ERR_BAD_REQUEST") {
-      showMsg("error", error.response.data.message);
-    } else {
-      console.error(error);
-      showMsg("error", "Error interno del servidor");
-    }
-  }
-};
-
-onMounted(() => {
-  handleProducts();
-});
+onMounted(() => {});
 </script>

@@ -686,7 +686,10 @@
                 <Icon
                   name="pending"
                   textColor="text-warning"
-                  v-if="pickupEdit.status === 'En proceso' || pickupEdit.status === 'Pendiente'"
+                  v-if="
+                    pickupEdit.status === 'En proceso' ||
+                    pickupEdit.status === 'Pendiente'
+                  "
                 ></Icon>
                 <Icon
                   name="pending"
@@ -697,7 +700,11 @@
                   name="pending"
                   textColor="text-secondary"
                   @click="showModalInfoProduct(props.rowModified)"
-                  v-if="(props.rowModified.recolected || !props.rowModified.recolected) && pickupEdit.status === 'Finalizada'"
+                  v-if="
+                    (props.rowModified.recolected ||
+                      !props.rowModified.recolected) &&
+                    pickupEdit.status === 'Finalizada'
+                  "
                 ></Icon>
               </div>
             </template>
@@ -708,12 +715,22 @@
   </Dialog>
 
   <!-- Modal para ver información de producto de recolección -->
-  <Dialog :show="modalInfoProduct" @update:show="() => {modalInfoProduct = $event; modalInfo = true}">
+  <Dialog
+    :show="modalInfoProduct"
+    @update:show="
+      () => {
+        modalInfoProduct = $event;
+        modalInfo = true;
+      }
+    "
+  >
     <template #title>
       <div class="flex justify-center">
-        <h2 class="text-2xl font-bold text-gray-900">Información de producto</h2>
+        <h2 class="text-2xl font-bold text-gray-900">
+          Información de producto
+        </h2>
       </div>
-    </template> 
+    </template>
     <template #content>
       <div
         class="grid grid-cols-12 items-center justify-center w-5/6 gap-6 mt-5 mb-5"
@@ -728,7 +745,9 @@
         </div>
         <div class="col-span-6 mb-1">
           <div class="flex flex-col flex-grow">
-            <label class="text-primary text-md font-title">Fecha de recolección</label>
+            <label class="text-primary text-md font-title"
+              >Fecha de recolección</label
+            >
             <label class="text-black dark:text-white text-lg font-title">{{
               productSelected ? pickupEdit.date.substring(0, 10) : "Fecha"
             }}</label>
@@ -753,21 +772,20 @@
             </div>
           </div>
         </div>
-        <div class="col-span-12 mb-1"
-        >
+        <div class="col-span-12 mb-1">
           <div class="flex flex-col flex-grow">
-            <label class="text-primary text-md font-title"
-              >Comentarios</label
-            >
+            <label class="text-primary text-md font-title">Comentarios</label>
             <label class="text-black dark:text-white text-lg font-title">{{
-             productSelected.product.product.annexes
+              productSelected.product.product.annexes
                 ? productSelected.product.product.annexes.commentary
                 : "Comentarios"
             }}</label>
           </div>
         </div>
         <div
-          v-if="productSelected.product.product.annexes.photos && productSelected.product.product.annexes.photos.length > 0
+          v-if="
+            productSelected.product.product.annexes.photos &&
+            productSelected.product.product.annexes.photos.length > 0
           "
           class="col-span-12 mb-1"
         >
@@ -780,7 +798,8 @@
             >
               <!-- Existing Images -->
               <div
-                v-for="(image, index) in productSelected.product.product.annexes.photos"
+                v-for="(image, index) in productSelected.product.product.annexes
+                  .photos"
                 :key="index"
                 class="relative"
               >
@@ -865,6 +884,9 @@ const productsStore = useProductsStore();
 const pickupsStore = usePickupsStore();
 const { pickups } = storeToRefs(pickupsStore);
 
+let pendientRequest = [];
+let isOnline = navigator.onLine;
+
 //selects
 const selectStores = ref(null);
 const selectUsers = ref(null);
@@ -930,7 +952,7 @@ const columnsInfo = computed(() => [
   {
     title: "Estado",
     field: "recolected",
-    format: (val) => val ? "Recolectado" : "No recolectado",
+    format: (val) => (val ? "Recolectado" : "No recolectado"),
     required: true,
   },
   {
@@ -985,24 +1007,31 @@ function getFormattedDate() {
 const currentDate = ref(getFormattedDate());
 
 const handlePickups = async () => {
-  try {
-    loading.show();
-    let payload = {
-      query: {
-        filter: filter.value,
-        ...pag.value,
-      },
-    };
-    let res = await pickupsStore.getPickups(payload);
-  } catch (error) {
-    if (error.code == "ERR_NETWORK") {
-      showMsg("error", "Error de conexión");
-    } else {
-      console.log(error);
-      showMsg("error", "Error interno del servidor");
+  if (filter.value !== "" && !isOnline) {
+    showMsg(
+      "error",
+      "Lo sentimos, no puedes realizar una búsqueda sin conexión"
+    );
+  } else {
+    try {
+      loading.show();
+      let payload = {
+        query: {
+          filter: filter.value,
+          ...pag.value,
+        },
+      };
+      let res = await pickupsStore.getPickups(payload);
+    } catch (error) {
+      if (error.code == "ERR_NETWORK") {
+        showMsg("error", "Error de conexión");
+      } else {
+        console.log(error);
+        showMsg("error", "Error interno del servidor");
+      }
+    } finally {
+      loading.hide();
     }
-  } finally {
-    loading.hide();
   }
 };
 
@@ -1130,7 +1159,6 @@ const handleAddProduct = async () => {
       product: null,
       quantity: null,
     };
-    console.log("products", products);
   } catch (error) {
     console.error(error);
   }
@@ -1148,7 +1176,6 @@ const handleAddProductEdit = async () => {
       product: null,
       quantity: null,
     };
-    console.log("products", productsEdit);
   } catch (error) {
     console.error(error);
   }
@@ -1245,13 +1272,30 @@ const handleAdd = async () => {
         products: aux,
       },
     };
-    console.log(payload);
-    let res = await pickupsStore.addPickup(payload);
-    if (res.data.statusCode == 200) {
-      showMsg("success", "Recolección agregada correctamente");
-      modalAdd.value = false;
-      handlePickups();
+
+    if (!isOnline) {
+      pendientRequest.push(() => pickupsStore.addPickup(payload));
+      showMsg(
+        "success",
+        "La petición será enviada cuando se restablezca la conexión a Internet."
+      );
+    } else {
+      let res = await pickupsStore.addPickup(payload);
+      if (res.data.statusCode == 200) {
+        showMsg("success", "Recolección agregada correctamente");
+      }
     }
+
+    modalAdd.value = false;
+    products.length = 0;
+    pickup.value = {
+      name: null,
+      date: null,
+      chain: null,
+      user: null,
+      products: [],
+    };
+    handlePickups();
   } catch (error) {
     if (error.code == "ERR_NETWORK") {
       showMsg("error", "Error de conexión");
@@ -1322,12 +1366,21 @@ const handleUpdate = async () => {
         products: aux,
       },
     };
-    console.log(payload);
-    let res = await pickupsStore.updatePickup(payload);
-    if (res.data.statusCode == 200) {
-      showMsg("success", "Recolección modificada correctamente");
+
+    if (!isOnline) {
+      pendientRequest.push(() => pickupsStore.updatePickup(payload));
+      showMsg(
+        "success",
+        "La petición será enviada cuando se restablezca la conexión a Internet."
+      );
       modalEdit.value = false;
-      handlePickups();
+    } else {
+      let res = await pickupsStore.updatePickup(payload);
+      if (res.data.statusCode == 200) {
+        showMsg("success", "Recolección modificada correctamente");
+        modalEdit.value = false;
+        handlePickups();
+      }
     }
   } catch (error) {
     if (error.code == "ERR_NETWORK") {
@@ -1372,11 +1425,21 @@ const handleCancel = async () => {
         photos: images.value,
       };
     }
-    let res = await pickupsStore.cancelPickup(payload);
-    if (res.data.statusCode == 200) {
-      showMsg("success", "Recolección cancelada correctamente");
+
+    if (!isOnline) {
+      pendientRequest.push(() => pickupsStore.cancelPickup(payload));
+      showMsg(
+        "success",
+        "La petición será enviada cuando se restablezca la conexión a Internet."
+      );
       modalCancel.value = false;
-      handlePickups();
+    } else {
+      let res = await pickupsStore.cancelPickup(payload);
+      if (res.data.statusCode == 200) {
+        showMsg("success", "Recolección cancelada correctamente");
+        modalCancel.value = false;
+        handlePickups();
+      }
     }
   } catch (error) {
     if (error.code == "ERR_NETWORK") {
@@ -1419,7 +1482,6 @@ const selectedRow = async (pickup) => {
         photos: pickup.generalAnnexes ? pickup.generalAnnexes.photos : [],
       },
     };
-    console.log("products pickupEdit", pickupEdit.value.products);
     modalInfo.value = true;
   } catch (error) {
     console.log(error);
@@ -1428,12 +1490,10 @@ const selectedRow = async (pickup) => {
 
 const showModalInfoProduct = async (product) => {
   try {
-    console.log("product", product);
     productSelected.value = {
       pickup: pickup,
       product: product,
     };
-    console.log("productSelected", productSelected);
     modalInfo.value = false;
     modalInfoProduct.value = true;
   } catch (error) {
@@ -1461,7 +1521,26 @@ const removeImage = (index) => {
   images.value.splice(index, 1);
 };
 
+const showOnlineAlert = async () => {
+  showMsg("success", "La conexión a Internet ha sido restablecida.");
+  isOnline = true;
+  await Promise.all(
+    pendientRequest.map(async (request) => {
+      await request();
+    })
+  );
+  pendientRequest = [];
+  await handlePickups();
+};
+
+const showOfflineAlert = () => {
+  showMsg("error", "La conexión a Internet se ha perdido.");
+  isOnline = false;
+};
+
 onMounted(() => {
+  window.addEventListener("online", showOnlineAlert);
+  window.addEventListener("offline", showOfflineAlert);
   handlePickups();
   showStores();
   showUsers();

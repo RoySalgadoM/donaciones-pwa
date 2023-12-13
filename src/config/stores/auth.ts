@@ -34,6 +34,19 @@ export const useAccessAuthStore = defineStore("accessAuth", () => {
     }
   }
 
+  const reqRecoverPassword = async (email: string) => {
+    try {
+      let response = await APIFactory.post({
+        path: "/reqRecoverPassword",
+        setToken: true,
+        body: {email},
+      });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   return {
     //States
     isValid,
@@ -43,6 +56,7 @@ export const useAccessAuthStore = defineStore("accessAuth", () => {
     //Actions
     setValidation,
     logout,
+    reqRecoverPassword,
   };
 });
 
