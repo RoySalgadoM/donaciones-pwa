@@ -655,6 +655,11 @@
                   v-if="props.rowModified.status === 'Pendiente'"
                 ></Icon>
                 <Icon
+                  name="pending"
+                  textColor="text-danger"
+                  v-if="props.rowModified.status === 'Pendiente'  && deliveryEdit.status === 'Cancelada'"
+                ></Icon>
+                <Icon
                   name="info"
                   textColor="text-secondary"
                   title="Pendiente"
