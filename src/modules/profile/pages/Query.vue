@@ -11,11 +11,17 @@
           </div>
         </div>
         <div class="mb-4 col-span-9">
-          <div class="text-2xl font-semibold break-words truncate">
+          <div class="text-xl font-semibold break-words truncate mb-2">
             {{ "Miriam Guadalupe Saucedo Bustamante" }}
           </div>
-          <div class="text-xl font-normal break-words truncate">
-            {{ "Email: miriam@gmail.com" }}
+          <div class="text-lg font-normal break-words truncate mb-2">
+            {{ "Correo electrónico: miriam@gmail.com" }}
+          </div>
+          <div class="text-lg font-normal break-words truncate mb-2">
+            {{ "Teléfono: 7771888263" }}
+          </div>
+          <div class="text-lg font-normal break-words truncate mb-2">
+            {{ "Teléfono: 7771888263" }}
           </div>
         </div>
       </div>

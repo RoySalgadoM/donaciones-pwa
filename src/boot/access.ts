@@ -7,20 +7,21 @@ router.beforeResolve(async (to, from, next) => {
   try {
     if (to.path === "/api") {
       next();
-    }
-    await accessAuth.setValidation();
-    if (to.meta.privilege) {
-      if (accessAuth.isValid) {
-        next();
-      } else {
-        notify.show("error", "No cuentas con acceso");
-        next({ name: "Login" });
-      }
     } else {
-      if (accessAuth.isValid) {
-        next(from.name ? { name: from.name } : { name: "queryUser" });
+      await accessAuth.setValidation();
+      if (to.meta.privilege) {
+        if (accessAuth.isValid) {
+          next();
+        } else {
+          notify.show("error", "No cuentas con acceso");
+          next({ name: "Login" });
+        }
       } else {
-        next();
+        if (accessAuth.isValid) {
+          next(from.name ? { name: from.name } : { name: "queryUser" });
+        } else {
+          next();
+        }
       }
     }
   } catch (error) {
