@@ -54,7 +54,7 @@
             </div>
           </Form>
           <div class="text-sm text-center">
-            ¿Olvidaste tu contraseña?
+            ¿Olvidaste tu contraseña? 
             <a href="recuperar" class="text-blue-500">Recuperar</a>
           </div>
         </div>
