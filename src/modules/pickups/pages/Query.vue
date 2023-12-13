@@ -265,9 +265,10 @@
               </div>
             </div>
           </Form>
-
+          <span v-if="!isProductSelected" class="text-danger text-md">
+            Se debe agregar al menos un producto
+          </span>
           <Table
-            ref="dataTableRef"
             :columns="columns"
             :filter="search"
             :rows="products"
@@ -285,7 +286,6 @@
                 ></Icon></div
             ></template>
           </Table>
-
           <div class="flex items-center justify-end gap-2 mt-1">
             <div class="flex-grow">
               <Btn
@@ -408,7 +408,9 @@
               </div>
             </div>
           </Form>
-
+          <span v-if="!isProductEditSelected" class="text-danger text-md">
+            Se debe agregar al menos un producto
+          </span>
           <Table
             :columns="columns"
             :filter="search"
@@ -467,7 +469,7 @@
     </template>
     <template #content>
       <div class="flex flex-grow items-center">
-        <Form class="pt-5 mb-4" @formSubmit="modalConfirm = true">
+        <Form class="pt-5 mb-4" @formSubmit="handleCancel">
           <div class="flex flex-col px-8 sm:grid sm:grid-cols-12 sm:gap-4">
             <div class="mb-2 sm:col-span-12">
               <Input
@@ -636,11 +638,19 @@
               >Comentarios de cancelación</label
             >
             <label class="text-black dark:text-white text-lg font-title">{{
-              pickupEdit.generalAnnexes ? pickupEdit.generalAnnexes.commentary : "Comentarios"
+              pickupEdit.generalAnnexes
+                ? pickupEdit.generalAnnexes.commentary
+                : "Comentarios"
             }}</label>
           </div>
         </div>
-        <div v-if="(pickupEdit.status === 'Cancelada' || pickupEdit.status === 'Finalizada') && (pickupEdit.generalAnnexes.photos)" class="col-span-12 mb-1">
+        <div
+          v-if="
+            pickupEdit.status === 'Cancelada' &&
+            pickupEdit.generalAnnexes.photos
+          "
+          class="col-span-12 mb-1"
+        >
           <div class="flex flex-col flex-grow">
             <label class="text-primary text-md font-title mb-2"
               >Evidencia</label
@@ -670,7 +680,32 @@
             serverSide
             bgColorSelected
             :totalRows="pickupEdit.products.length"
-          />
+          >
+            <template v-slot:cell-name-accion="props">
+              <div class="flex justify-center items-center mt-2">
+                <Icon
+                  name="pending"
+                  textColor="text-warning"
+                  v-if="pickupEdit.status === 'En proceso' || pickupEdit.status === 'Pendiente'"
+                ></Icon>
+                <Icon
+                  name="info"
+                  textColor="text-secondary"
+                  @click="showModalInfoRoute(props.rowModified)"
+                  v-if="
+                    props.rowModified.status === 'Finalizada' ||
+                    props.rowModified.status === 'Cancelada'
+                  "
+                ></Icon>
+                <Icon
+                  name="pending"
+                  textColor="text-primary"
+                  title="En proceso"
+                  v-if="props.rowModified.status === 'En proceso'"
+                ></Icon>
+              </div>
+            </template>
+          </Table>
         </div>
       </div>
     </template>
@@ -806,24 +841,23 @@ const columnsInfo = computed(() => [
     format: (val) => val,
     required: true,
   },
+  {
+    title: "Estado",
+    field: "recolected",
+    format: (val) => pickupEdit.status === "En proceso" ? pickupEdit.status : val ? "Recolectado" : "No recolectado",
+    required: true,
+  },
+  {
+    title: "Ver más",
+    field: "accion",
+    format: (val) => val,
+    required: true,
+  },
 ]);
 
 const pag = ref({
   rowsPerPage: 100,
   page: 1,
-});
-
-const storeEdit = ref({
-  id: null,
-  name: null,
-  address: null,
-  nameLinkPerson: null,
-  phones: [],
-});
-
-const editPhones = ref({
-  phone: null,
-  secondphone: null,
 });
 
 const pickup = ref({
@@ -1087,8 +1121,27 @@ const handleSearchInput = async (props) => {
   }
 };
 
+const isProductSelected = computed(() => {
+  if (products.length == 0) {
+    return false;
+  } else {
+    return true;
+  }
+});
+
+const isProductEditSelected = computed(() => {
+  if (productsEdit.value.length == 0) {
+    return false;
+  } else {
+    return true;
+  }
+});
+
 const handleAdd = async () => {
   try {
+    if (!isProductSelected.value) {
+      return;
+    }
     loading.show();
     let aux = products.map((item) => {
       return {
@@ -1122,7 +1175,7 @@ const handleAdd = async () => {
       console.error(error);
       showMsg("error", "Error interno del servidor");
     }
-  }finally {
+  } finally {
     loading.hide();
   }
 };
@@ -1162,6 +1215,9 @@ const showModalEdit = async (pickup) => {
 
 const handleUpdate = async () => {
   try {
+    if (!isProductEditSelected.value) {
+      return;
+    }
     loading.show();
     let aux = productsEdit.value.map((item) => {
       return {
@@ -1196,7 +1252,7 @@ const handleUpdate = async () => {
       console.error(error);
       showMsg("error", "Error interno del servidor");
     }
-  }finally {
+  } finally {
     loading.hide();
   }
 };
@@ -1226,10 +1282,10 @@ const handleCancel = async () => {
     };
     if (images.value.length > 0) {
       payload.body.generalAnnexes = {
-        ...images.value,
+        commentary: cancel.value.commentary,
+        photos: images.value,
       };
     }
-    console.log("payload", payload);
     let res = await pickupsStore.cancelPickup(payload);
     if (res.data.statusCode == 200) {
       showMsg("success", "Recolección cancelada correctamente");
@@ -1250,7 +1306,7 @@ const handleCancel = async () => {
 
 const selectedRow = async (pickup) => {
   try {
-    console.log("pickup products", pickup.products);
+    console.log("products", pickup);
     let aux = 0;
     let productsAux = pickup.products.map((item) => {
       aux = aux + 1;
@@ -1259,7 +1315,12 @@ const selectedRow = async (pickup) => {
         product: {
           id: item.id,
           name: item.name,
+          annexes: {
+            commentary: item.annexes ? item.annexes.commentary : null,
+            photos: item.annexes ? item.annexes.photos : [],
+          }
         },
+        recolected: item.recolected,
         quantity: item.quantity,
       };
     });
@@ -1273,7 +1334,9 @@ const selectedRow = async (pickup) => {
       user: pickup.user,
       products: productsAux,
       generalAnnexes: {
-        commentary: pickup.generalAnnexes ? pickup.generalAnnexes.commentary : null,
+        commentary: pickup.generalAnnexes
+          ? pickup.generalAnnexes.commentary
+          : null,
         photos: pickup.generalAnnexes ? pickup.generalAnnexes.photos : [],
       },
     };

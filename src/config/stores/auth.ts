@@ -10,15 +10,16 @@ export const useAccessAuthStore = defineStore("accessAuth", () => {
 
   async function setValidation() {
     try {
-      let response = await APIFactory.post({
-        path: "/verify-token",
+      let token = localStorage.getItem("token");
+      let response = await APIFactory.get({
+        path: "/verifyToken",
         setToken: true,
+        query: {token},
       });
       isValid.value = true;
       userLogged.value = response.data.data;
     } catch (error) {
       isValid.value = false;
-      throw error;
     }
   }
 
@@ -29,7 +30,7 @@ export const useAccessAuthStore = defineStore("accessAuth", () => {
     } catch (error) {
       throw error;
     } finally {
-      isValid.value = null;
+      isValid.value = false;
     }
   }
 

@@ -41,7 +41,8 @@ const menuItems = [
   { icon: 'location_city', text: 'Colonias', route: 'queryNeighborhood' },
   { icon: 'shopping_cart', text: 'Productos', route: 'queryProduct' },
   { icon: 'local_shipping', text: 'Recolecciones', route: 'queryPickups' },
-  { icon: 'local_shipping', text: 'Repartos', route: 'queryDeliveries' }
+  { icon: 'local_shipping', text: 'Repartos', route: 'queryDeliveries' },
+  { icon: 'person', text: 'Perfil', route: 'queryProfile' }
 ];
 
 const handleRoute = (route) => {

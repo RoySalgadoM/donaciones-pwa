@@ -28,6 +28,7 @@ export const useNeighborhoodStore = defineStore("neighborhood", () => {
         query,
       });
       neighborhoods.value = response.data.data.neighborhoods;
+      return response.data.data;
     } catch (error) {
       throw error;
     }

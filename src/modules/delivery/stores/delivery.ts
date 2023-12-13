@@ -9,7 +9,7 @@ export const useDeliveryStore = defineStore("delivery", () => {
   const addDelivery = async (payload) => {
     try {
       let response = await APIFactory.post({
-        path: "/delivery",
+        path: "/deliveries",
         setToken: true,
         body: payload.body,
       });
@@ -22,7 +22,7 @@ export const useDeliveryStore = defineStore("delivery", () => {
   const updateDelivery = async (payload) => {
     try {
       let response = await APIFactory.put({
-        path: `/delivery/${payload.id}`,
+        path: `/deliveries/${payload.id}`,
         setToken: true,
         body: payload.body,
       });
@@ -35,7 +35,7 @@ export const useDeliveryStore = defineStore("delivery", () => {
   const cancelDelivery = async (payload) => {
     try {
       let response = await APIFactory.patch({
-        path: `/delivery/cancel/${payload.id}`,
+        path: `/deliveries/cancel/${payload.id}`,
         setToken: true,
         body: payload.body,
       });
@@ -49,7 +49,7 @@ export const useDeliveryStore = defineStore("delivery", () => {
     try {
       let query = payload.query;
       let response = await APIFactory.get({
-        path: "/delivery",
+        path: "/deliveries",
         setToken: true,
         query,
       });
@@ -58,12 +58,6 @@ export const useDeliveryStore = defineStore("delivery", () => {
         totalDocs: response.data.total,
         limit: payload.query.limit || 0,
         page: payload.query.page || 1,
-        totalPages: response.data.pages,
-        pagingCounter: response.data.page,
-        hasPrevPage: response.data.hasPrevPage,
-        hasNextPage: response.data.hasNextPage,
-        prevPage: response.data.prevPage,
-        nextPage: response.data.nextPage,
       };
     } catch (error) {
       throw error;

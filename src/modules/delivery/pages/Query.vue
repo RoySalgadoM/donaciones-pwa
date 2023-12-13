@@ -30,19 +30,19 @@
       </div>
     </template>
     <template #content>
-      <div v-if="pickups.length === 0">
+      <div v-if="deliveries.length === 0">
         <div class="flex justify-center">
           <div class="mt-10 mb-5 text-gray-500 text-2xl">
-            No hay recolecciones registradas
+            No hay repartos registrados
           </div>
         </div>
       </div>
 
       <div
-        v-if="pickups.length > 0"
+        v-if="deliveries.length > 0"
         class="grid grid-cols-12 gap-4 px-2 items-stretch"
       >
-        <Collapse v-for="pickup in pickups" :key="pickup.id">
+        <Collapse v-for="delivery in deliveries" :key="delivery.id">
           <template #content>
             <div
               class="bg-white p-2 shadow-md flex flex-col rounded-lg rounded-collapse-top"
@@ -57,28 +57,28 @@
                 >
                 <div class="ml-2 flex-grow min-w-0">
                   <div class="font-semibold break-words truncate">
-                    {{ pickup.name }}
+                    {{ delivery.name }}
                   </div>
                   <span
-                    v-if="pickup.status === 'Pendiente'"
+                    v-if="delivery.status === 'Pendiente'"
                     class="bg-yellow-200 text-yellow-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-yellow-200 dark:text-yellow-900"
                   >
                     Pendiente
                   </span>
                   <span
-                    v-if="pickup.status === 'En proceso'"
+                    v-if="delivery.status === 'En proceso'"
                     class="bg-blue-200 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-900"
                   >
                     En proceso
                   </span>
                   <span
-                    v-if="pickup.status === 'Finalizada'"
+                    v-if="delivery.status === 'Finalizada'"
                     class="bg-green-200 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900"
                   >
                     Finalizada
                   </span>
                   <span
-                    v-if="pickup.status === 'Cancelada'"
+                    v-if="delivery.status === 'Cancelada'"
                     class="bg-red-200 text-red-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-red-200 dark:text-red-900"
                   >
                     Cancelada
@@ -90,11 +90,11 @@
                 class="flex-shrink-0 flex justify-end items-end space-x-2 buttons-container"
               >
                 <Btn
-                  v-if="pickup.status === 'Pendiente'"
+                  v-if="delivery.status === 'Pendiente'"
                   color="bg-gray-200"
                   hoverColor="hover:bg-gray-200"
                   rounded
-                  @click="showModalEdit(pickup)"
+                  @click="showModalEdit(delivery)"
                 >
                   <template #icon>
                     <span class="material-icons">edit</span>
@@ -105,19 +105,19 @@
                   color="bg-gray-200"
                   hoverColor="hover:bg-gray-200"
                   rounded
-                  @click="selectedRow(pickup)"
+                  @click="selectedRow(delivery)"
                 >
                   <template #icon>
                     <span class="material-icons">info</span>
                   </template>
                 </Btn>
                 <Btn
-                  v-if="pickup.status === 'Pendiente'"
+                  v-if="delivery.status === 'Pendiente'"
                   type="submit"
                   color="bg-gray-200"
                   hoverColor="hover:bg-gray-200"
                   rounded
-                  @click="showModalCancel(pickup)"
+                  @click="showModalCancel(delivery)"
                 >
                   <template #icon>
                     <span class="material-icons">block</span>
@@ -132,11 +132,11 @@
             >
               <div class="flex-shrink-0 flex space-x-2">
                 <Btn
-                  v-if="pickup.status === 'Pendiente'"
+                  v-if="delivery.status === 'Pendiente'"
                   color="bg-gray-200"
                   hoverColor="hover:bg-gray-200"
                   rounded
-                  @click="showModalEdit(pickup)"
+                  @click="showModalEdit(delivery)"
                 >
                   <template #icon>
                     <span class="material-icons">edit</span>
@@ -147,19 +147,19 @@
                   color="bg-gray-200"
                   hoverColor="hover:bg-gray-200"
                   rounded
-                  @click="selectedRow(pickup)"
+                  @click="selectedRow(delivery)"
                 >
                   <template #icon>
                     <span class="material-icons">info</span>
                   </template>
                 </Btn>
                 <Btn
-                  v-if="pickup.status === 'Pendiente'"
+                  v-if="delivery.status === 'Pendiente'"
                   type="submit"
                   color="bg-gray-200"
                   hoverColor="hover:bg-gray-200"
                   rounded
-                  @click="showModalCancel(pickup)"
+                  @click="showModalCancel(delivery)"
                 >
                   <template #icon>
                     <span class="material-icons">block</span>
@@ -173,11 +173,11 @@
     </template>
   </ContentSection>
 
-  <!-- Modal para agregar recolección -->
+  <!-- Modal para agregar reparto -->
   <Dialog :size="sm" :show="modalAdd" @update:show="modalAdd = $event">
     <template #title>
       <div class="flex justify-center">
-        <h2 class="text-2xl font-bold text-black">Agregar recolección</h2>
+        <h2 class="text-2xl font-bold text-black">Agregar reparto</h2>
       </div>
     </template>
     <template #content>
@@ -188,15 +188,15 @@
               <Input
                 required
                 :label="'Nombre'"
-                v-model.alfaNumChar="pickup.name"
-                @clean="pickup.name = null"
+                v-model.alfaNumChar="delivery.name"
+                @clean="delivery.name = null"
               />
             </div>
             <div class="mb-4 sm:col-span-6">
               <Calendar
-                :label="'Fecha para recolección'"
-                v-model="pickup.date"
-                @clean="pickup.date = null"
+                :label="'Fecha para reparto'"
+                v-model="delivery.date"
+                @clean="delivery.date = null"
                 :formatDate="'yyyy-MM-dd'"
                 :formatDateStart="'yyyy-MM-dd'"
                 :dateToStart="currentDate"
@@ -207,18 +207,8 @@
           <div class="flex flex-col sm:grid sm:grid-cols-12 sm:gap-4">
             <div class="mb-4 sm:col-span-6">
               <Select
-                v-model="pickup.chain"
-                @clean="pickup.chain = null"
-                required
-                :label="'Tienda'"
-                :options="selectStores"
-                :loading="selectStores === null"
-              />
-            </div>
-            <div class="mb-4 sm:col-span-6">
-              <Select
-                v-model="pickup.user"
-                @clean="pickup.user = null"
+                v-model="delivery.user"
+                @clean="delivery.user = null"
                 required
                 :options="selectUsers"
                 :loading="selectUsers === null"
@@ -226,27 +216,18 @@
               />
             </div>
           </div>
-          <span class="mt-3 text-lg font-bold">Productos</span>
+          <span class="mt-3 text-lg font-bold">Colonias</span>
           <hr class="bg-primary" />
-          <Form @formSubmit="handleAddProduct">
+          <Form @formSubmit="handleAddNeighborhood">
             <div class="grid grid-cols-12 gap-4 mt-3">
-              <div class="mb-4 col-span-6">
+              <div class="mb-4 col-span-10">
                 <Select
-                  v-model="product.product"
-                  @clean="product.product = null"
+                  v-model="neighborhood.neighborhood"
+                  @clean="neighborhood.neighborhood = null"
                   required
-                  :options="computedProducts"
-                  :loading="computedProducts === null"
-                  :label="'Producto'"
-                />
-              </div>
-              <div class="mb-4 col-span-4">
-                <Input
-                  required
-                  :label="'Cantidad'"
-                  v-model.integer="product.quantity"
-                  @clean="product.quantity = null"
-                  :rules="[(v) => v > 0 || 'La cantidad debe ser mayor a 0']"
+                  :options="computedNeighborhoods"
+                  :loading="computedNeighborhoods === null"
+                  :label="'Colonia'"
                 />
               </div>
               <div class="mb-4 col-span-2">
@@ -265,15 +246,16 @@
               </div>
             </div>
           </Form>
-
+          <span v-if="!isNeighborhoodSelected" class="text-danger text-md">
+            Se debe agregar al menos una colonia
+          </span>
           <Table
-            ref="dataTableRef"
             :columns="columns"
             :filter="search"
-            :rows="products"
+            :rows="neighborhoods"
             serverSide
             bgColorSelected
-            :totalRows="products.length"
+            :totalRows="neighborhoods.length"
           >
             <template v-slot:cell-name-accion="props">
               <div class="flex justify-center items-center mt-2">
@@ -281,7 +263,7 @@
                   name="delete_forever"
                   textColor="text-gray-600"
                   darkTextColor="dark:text-gray-600"
-                  @click="handleDeleteProduct(props.rowModified)"
+                  @click="handleDeleteNeighborhood(props.rowModified)"
                 ></Icon></div
             ></template>
           </Table>
@@ -316,11 +298,11 @@
     </template>
   </Dialog>
 
-  <!-- Modal para editar recolección -->
+  <!-- Modal para editar reparto -->
   <Dialog :size="sm" :show="modalEdit" @update:show="modalEdit = $event">
     <template #title>
       <div class="flex justify-center">
-        <h2 class="text-2xl font-bold text-black">Editar recolección</h2>
+        <h2 class="text-2xl font-bold text-black">Editar reparto</h2>
       </div>
     </template>
     <template #content>
@@ -331,15 +313,15 @@
               <Input
                 required
                 :label="'Nombre'"
-                v-model.alfaNumChar="pickupEdit.name"
-                @clean="pickupEdit.name = null"
+                v-model.alfaNumChar="deliveryEdit.name"
+                @clean="deliveryEdit.name = null"
               />
             </div>
             <div class="mb-4 sm:col-span-6">
               <Calendar
-                :label="'Fecha para recolección'"
-                v-model="pickupEdit.date"
-                @clean="pickupEdit.date = null"
+                :label="'Fecha para reparto'"
+                v-model="deliveryEdit.date"
+                @clean="deliveryEdit.date = null"
                 :formatDate="'yyyy-MM-dd'"
                 :formatDateStart="'yyyy-MM-dd'"
                 :dateToStart="currentDate"
@@ -350,18 +332,8 @@
           <div class="flex flex-col sm:grid sm:grid-cols-12 sm:gap-4">
             <div class="mb-4 sm:col-span-6">
               <Select
-                v-model="pickupEdit.chain"
-                @clean="pickupEdit.chain = null"
-                required
-                :label="'Tienda'"
-                :options="selectStores"
-                :loading="selectStores === null"
-              />
-            </div>
-            <div class="mb-4 sm:col-span-6">
-              <Select
-                v-model="pickupEdit.user"
-                @clean="pickupEdit.user = null"
+                v-model="deliveryEdit.user"
+                @clean="deliveryEdit.user = null"
                 required
                 :options="selectUsers"
                 :loading="selectUsers === null"
@@ -369,27 +341,18 @@
               />
             </div>
           </div>
-          <span class="mt-3 text-lg font-bold">Productos</span>
+          <span class="mt-3 text-lg font-bold">Colonias</span>
           <hr class="bg-primary" />
-          <Form @formSubmit="handleAddProductEdit">
+          <Form @formSubmit="handleAddNeighborhoodEdit">
             <div class="grid grid-cols-12 gap-4 mt-3">
-              <div class="mb-4 col-span-6">
+              <div class="mb-4 col-span-10">
                 <Select
-                  v-model="product.product"
-                  @clean="product.product = null"
+                  v-model="neighborhoodEdit.neighborhood"
+                  @clean="neighborhoodEdit.neighborhood = null"
                   required
-                  :options="computedProductsEdit"
-                  :loading="computedProductsEdit === null"
-                  :label="'Producto'"
-                />
-              </div>
-              <div class="mb-4 col-span-4">
-                <Input
-                  required
-                  :label="'Cantidad'"
-                  v-model.integer="product.quantity"
-                  @clean="product.quantity = null"
-                  :rules="[(v) => v > 0 || 'La cantidad debe ser mayor a 0']"
+                  :options="computedNeighborhoodsEdit"
+                  :loading="computedNeighborhoodsEdit === null"
+                  :label="'Colonia'"
                 />
               </div>
               <div class="mb-4 col-span-2">
@@ -408,14 +371,16 @@
               </div>
             </div>
           </Form>
-
+          <span v-if="!isNeighborhoodEditSelected" class="text-danger text-md">
+            Se debe agregar al menos una colonia
+          </span>
           <Table
             :columns="columns"
             :filter="search"
-            :rows="productsEdit.value"
+            :rows="neighborhoodsEdit.value"
             serverSide
             bgColorSelected
-            :totalRows="productsEdit.value.length"
+            :totalRows="neighborhoodsEdit.value.length"
           >
             <template v-slot:cell-name-accion="props">
               <div class="flex justify-center items-center mt-2">
@@ -423,7 +388,7 @@
                   name="delete_forever"
                   textColor="text-gray-600"
                   darkTextColor="dark:text-gray-600"
-                  @click="handleDeleteProductEdit(props.rowModified)"
+                  @click="handleDeleteNeighborhoodEdit(props.rowModified)"
                 ></Icon></div
             ></template>
           </Table>
@@ -458,16 +423,16 @@
     </template>
   </Dialog>
 
-  <!-- Modal para cancelar recolección -->
+  <!-- Modal para cancelar reparto -->
   <Dialog :size="sm" :show="modalCancel" @update:show="modalCancel = $event">
     <template #title>
       <div class="flex justify-center">
-        <h2 class="text-2xl font-bold text-black">Cancelar recolección</h2>
+        <h2 class="text-2xl font-bold text-black">Cancelar reparto</h2>
       </div>
     </template>
     <template #content>
       <div class="flex flex-grow items-center">
-        <Form class="pt-5 mb-4" @formSubmit="modalConfirm = true">
+        <Form class="pt-5 mb-4" @formSubmit="handleCancel">
           <div class="flex flex-col px-8 sm:grid sm:grid-cols-12 sm:gap-4">
             <div class="mb-2 sm:col-span-12">
               <Input
@@ -552,13 +517,11 @@
     </template>
   </Dialog>
 
-  <!-- Modal para ver información recolección -->
+  <!-- Modal para ver información reparto -->
   <Dialog :show="modalInfo" @update:show="modalInfo = $event">
     <template #title>
       <div class="flex justify-center">
-        <h2 class="text-2xl font-bold text-gray-900">
-          Información de recolección
-        </h2>
+        <h2 class="text-2xl font-bold text-gray-900">Información de reparto</h2>
       </div>
     </template>
     <template #content>
@@ -569,25 +532,25 @@
           <div class="flex flex-col flex-grow">
             <label class="text-primary text-md font-title">Nombre</label>
             <label class="text-black dark:text-white text-lg font-title">{{
-              pickupEdit ? pickupEdit.name : "Nombre"
+              deliveryEdit ? deliveryEdit.name : "Nombre"
             }}</label>
           </div>
         </div>
         <div class="col-span-12 sm:col-span-6 mb-1">
           <div class="flex flex-col flex-grow">
             <label class="text-primary text-md font-title"
-              >Nombre del recolector</label
+              >Nombre del repartidor</label
             >
             <label class="text-black dark:text-white text-lg font-title">{{
-              pickupEdit
-                ? pickupEdit.user.name +
+              deliveryEdit
+                ? deliveryEdit.user.name +
                   " " +
-                  pickupEdit.user.lastname +
+                  deliveryEdit.user.lastname +
                   " " +
-                  (pickupEdit.user.secondSurname
-                    ? pickupEdit.user.secondSurname
+                  (deliveryEdit.user.secondSurname
+                    ? deliveryEdit.user.secondSurname
                     : "")
-                : "Recolector"
+                : "Repartidor"
             }}</label>
           </div>
         </div>
@@ -595,7 +558,7 @@
           <div class="flex flex-col flex-grow">
             <label class="text-primary text-md font-title">Fecha</label>
             <label class="text-black dark:text-white text-lg font-title">{{
-              pickupEdit ? pickupEdit.date.substring(0, 10) : "Fecha"
+              deliveryEdit ? deliveryEdit.date.substring(0, 10) : "Fecha"
             }}</label>
           </div>
         </div>
@@ -604,25 +567,25 @@
             <label class="text-primary text-md font-title">Estado</label>
             <div class="min-w-0">
               <span
-                v-if="pickupEdit.status === 'Pendiente'"
+                v-if="deliveryEdit.status === 'Pendiente'"
                 class="bg-yellow-200 text-yellow-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-yellow-200 dark:text-yellow-900"
               >
                 Pendiente
               </span>
               <span
-                v-if="pickupEdit.status === 'En proceso'"
+                v-if="deliveryEdit.status === 'En proceso'"
                 class="bg-blue-200 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-900"
               >
                 En proceso
               </span>
               <span
-                v-if="pickupEdit.status === 'Finalizada'"
+                v-if="deliveryEdit.status === 'Finalizada'"
                 class="bg-green-200 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900"
               >
                 Finalizada
               </span>
               <span
-                v-if="pickupEdit.status === 'Cancelada'"
+                v-if="deliveryEdit.status === 'Cancelada'"
                 class="bg-red-200 text-red-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-red-200 dark:text-red-900"
               >
                 Cancelada
@@ -630,17 +593,29 @@
             </div>
           </div>
         </div>
-        <div v-if="pickupEdit.status === 'Cancelada'" class="col-span-12 mb-1">
+        <div
+          v-if="deliveryEdit.status === 'Cancelada'"
+          class="col-span-12 mb-1"
+        >
           <div class="flex flex-col flex-grow">
             <label class="text-primary text-md font-title"
               >Comentarios de cancelación</label
             >
             <label class="text-black dark:text-white text-lg font-title">{{
-              pickupEdit.generalAnnexes ? pickupEdit.generalAnnexes.commentary : "Comentarios"
+              deliveryEdit.annexes
+                ? deliveryEdit.annexes.commentary
+                : "Comentarios"
             }}</label>
           </div>
         </div>
-        <div v-if="(pickupEdit.status === 'Cancelada' || pickupEdit.status === 'Finalizada') && (pickupEdit.generalAnnexes.photos)" class="col-span-12 mb-1">
+        <div
+          v-if="
+            (deliveryEdit.status === 'Cancelada' ||
+              deliveryEdit.status === 'Finalizada') &&
+            deliveryEdit.annexes.photos && deliveryEdit.annexes.photos.length > 0
+          "
+          class="col-span-12 mb-1"
+        >
           <div class="flex flex-col flex-grow">
             <label class="text-primary text-md font-title mb-2"
               >Evidencia</label
@@ -650,7 +625,7 @@
             >
               <!-- Existing Images -->
               <div
-                v-for="(image, index) in pickupEdit.generalAnnexes.photos"
+                v-for="(image, index) in deliveryEdit.annexes.photos"
                 :key="index"
                 class="relative"
               >
@@ -662,15 +637,108 @@
             </div>
           </div>
         </div>
-        <div v-if="pickupEdit.products" class="col-span-12 mb-1">
-          <label class="text-primary text-md font-title">Productos</label>
+        <div v-if="deliveryEdit.routes" class="col-span-12 mb-1">
+          <label class="text-primary text-md font-title">Colonias</label>
           <Table
             :columns="columnsInfo"
-            :rows="pickupEdit.products"
+            :rows="deliveryEdit.routes"
             serverSide
             bgColorSelected
-            :totalRows="pickupEdit.products.length"
-          />
+            :totalRows="deliveryEdit.routes.length"
+          >
+            <template v-slot:cell-name-accion="props">
+              <div class="flex justify-center items-center mt-2">
+                <Icon
+                  name="pending"
+                  textColor="text-warning"
+                  v-if="props.rowModified.status === 'Pendiente'"
+                ></Icon>
+                <Icon
+                  name="info"
+                  textColor="text-secondary"
+                  title="Pendiente"
+                  @click="showModalInfoRoute(props.rowModified)"
+                  v-if="props.rowModified.status === 'Finalizada' || props.rowModified.status === 'Cancelada'"
+                ></Icon>
+                <Icon
+                  name="pending"
+                  textColor="text-primary"
+                  title="En proceso"
+                  v-if="props.rowModified.status === 'En proceso'"
+                ></Icon>
+              </div>
+            </template>
+          </Table>
+        </div>
+      </div>
+    </template>
+  </Dialog>
+
+   <!-- Modal para ver información de ruta de reparto -->
+   <Dialog :show="modalInfoRoute" @update:show="() => {modalInfoRoute = $event; modalInfo = true}">
+    <template #title>
+      <div class="flex justify-center">
+        <h2 class="text-2xl font-bold text-gray-900">Información de ruta</h2>
+      </div>
+    </template> 
+    <template #content>
+      <div
+        class="grid grid-cols-12 items-center justify-center w-5/6 gap-6 mt-5 mb-5"
+      >
+        <div class="col-span-12 sm:col-span-6 mb-1">
+          <div class="flex flex-col flex-grow">
+            <label class="text-primary text-md font-title">Nombre</label>
+            <label class="text-black dark:text-white text-lg font-title">{{
+              routeSelected ? routeSelected.name : "Nombre"
+            }}</label>
+          </div>
+        </div>
+        <div class="col-span-6 mb-1">
+          <div class="flex flex-col flex-grow">
+            <label class="text-primary text-md font-title">Fecha</label>
+            <label class="text-black dark:text-white text-lg font-title">{{
+              deliveryEdit ? deliveryEdit.date.substring(0, 10) : "Fecha"
+            }}</label>
+          </div>
+        </div>
+        <div class="col-span-12 mb-1"
+        >
+          <div class="flex flex-col flex-grow">
+            <label class="text-primary text-md font-title"
+              >Comentarios</label
+            >
+            <label class="text-black dark:text-white text-lg font-title">{{
+              routeSelected.route.annexes
+                ? routeSelected.route.annexes.commentary
+                : "Comentarios"
+            }}</label>
+          </div>
+        </div>
+        <div
+          v-if="routeSelected.route.annexes && routeSelected.route.annexes.photos.length > 0
+          "
+          class="col-span-12 mb-1"
+        >
+          <div class="flex flex-col flex-grow">
+            <label class="text-primary text-md font-title mb-2"
+              >Evidencia</label
+            >
+            <div
+              class="flex flex-wrap justify-center sm:justify-start gap-6 px-8"
+            >
+              <!-- Existing Images -->
+              <div
+                v-for="(image, index) in routeSelected.route.annexes.photos"
+                :key="index"
+                class="relative"
+              >
+                <img
+                  :src="image"
+                  class="w-20 h-20 sm:w-32 sm:h-32 object-cover"
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </template>
@@ -723,40 +791,45 @@
       
 <script setup>
 import { inject, ref, onMounted, reactive, computed } from "vue";
-import { useStoresStore } from "@/modules/stores/stores/store";
 import { useUsersStore } from "@/modules/employees/stores/user";
-import { useProductsStore } from "@/modules/products/stores/product";
 import { usePickupsStore } from "@/modules/pickups/stores/pickup";
+import { useDeliveryStore } from "@/modules/delivery/stores/delivery";
+import { useNeighborhoodStore } from "@/modules/neighborhood/stores/neighborhood";
 import { storeToRefs } from "pinia";
 import { loading } from "@/kernel/components/loading";
 
 const showMsg = inject("showMsg", () => {});
 const timeout = ref(null);
 const filter = ref("");
-const dataTableRef = ref(null);
 const modalAdd = ref(false);
 const modalEdit = ref(false);
 const modalInfo = ref(false);
 const modalCancel = ref(false);
 const modalConfirm = ref(false);
-const storesStore = useStoresStore();
+const modalInfoRoute = ref(false);
 const usersStore = useUsersStore();
-const productsStore = useProductsStore();
-const pickupsStore = usePickupsStore();
-const { pickups } = storeToRefs(pickupsStore);
+const deliveryStore = useDeliveryStore();
+const neighborhoodsStore = useNeighborhoodStore();
+const { deliveries } = storeToRefs(deliveryStore);
 
 //selects
-const selectStores = ref(null);
 const selectUsers = ref(null);
-const selectProducts = ref(null);
-const selectProductsEdit = ref(null);
+const selectNeighborhoods = ref(null);
+const selectNeighborhoodsEdit = ref(null);
 
-const selectedProduct = ref(null);
-const products = reactive([]);
-const productsEdit = reactive([]);
-const product = ref({
-  product: null,
-  quantity: null,
+const selectedNeighborhood = ref(null);
+const selectedNeighborhoodEdit = ref(null);
+const neighborhoods = reactive([]);
+const neighborhoodsEdit = reactive([]);
+const routeSelected = ref(null);
+
+const neighborhood = ref({
+  neighborhood: null,
+  index: null,
+});
+
+const neighborhoodEdit = ref({
+  neighborhood: null,
   index: null,
 });
 
@@ -769,14 +842,8 @@ const columns = computed(() => [
   },
   {
     title: "Nombre",
-    field: "product",
+    field: "neighborhood",
     format: (val) => val.name,
-    required: true,
-  },
-  {
-    title: "Cantidad",
-    field: "quantity",
-    format: (val) => val,
     required: true,
   },
   {
@@ -796,13 +863,19 @@ const columnsInfo = computed(() => [
   },
   {
     title: "Nombre",
-    field: "product",
-    format: (val) => val.name,
+    field: "name",
+    format: (val) => val,
     required: true,
   },
   {
-    title: "Cantidad",
-    field: "quantity",
+    title: "Estado",
+    field: "status",
+    format: (val) => val,
+    required: true,
+  },
+  {
+    title: "Ver más",
+    field: "accion",
     format: (val) => val,
     required: true,
   },
@@ -813,35 +886,20 @@ const pag = ref({
   page: 1,
 });
 
-const storeEdit = ref({
-  id: null,
-  name: null,
-  address: null,
-  nameLinkPerson: null,
-  phones: [],
-});
-
-const editPhones = ref({
-  phone: null,
-  secondphone: null,
-});
-
-const pickup = ref({
+const delivery = ref({
   name: null,
   date: null,
-  chain: null,
   user: null,
-  products: [],
+  routes: [],
 });
 
-const pickupEdit = ref({
+const deliveryEdit = ref({
   id: null,
   name: null,
   date: null,
-  chain: null,
-  user: {},
-  products: [],
-  generalAnnexes: {
+  user: null,
+  routes: [],
+  annexes: {
     commentary: null,
     photos: [],
   },
@@ -864,7 +922,7 @@ function getFormattedDate() {
 
 const currentDate = ref(getFormattedDate());
 
-const handlePickups = async () => {
+const handleDeliveries = async () => {
   try {
     loading.show();
     let payload = {
@@ -873,7 +931,8 @@ const handlePickups = async () => {
         ...pag.value,
       },
     };
-    let res = await pickupsStore.getPickups(payload);
+    let res = await deliveryStore.getDeliveries(payload);
+    console.log("deliveries", deliveries);
   } catch (error) {
     if (error.code == "ERR_NETWORK") {
       showMsg("error", "Error de conexión");
@@ -883,33 +942,6 @@ const handlePickups = async () => {
     }
   } finally {
     loading.hide();
-  }
-};
-
-const showStores = async () => {
-  try {
-    let payload = {
-      query: {
-        ...pag.value,
-      },
-    };
-    let res = await storesStore.getStores(payload);
-    console.log(res);
-    if (res.chains) {
-      selectStores.value = res.chains.map((item) => {
-        return {
-          label: item.name,
-          value: item.id,
-        };
-      });
-    }
-  } catch (error) {
-    if (error.code == "ERR_NETWORK") {
-      showMsg("error", "Error de conexión");
-    } else {
-      console.log(error);
-      showMsg("error", "Error interno del servidor");
-    }
   }
 };
 
@@ -945,18 +977,17 @@ const showUsers = async () => {
   }
 };
 
-const showProducts = async () => {
+const showNeighborhoods = async () => {
   try {
     let payload = {
       query: {
         ...pag.value,
-        status: "true",
       },
     };
-    let res = await productsStore.getProducts(payload);
-    if (res.products) {
-      selectProducts.value = res.products;
-      selectProductsEdit.value = res.products;
+    let res = await neighborhoodsStore.getNeighborhoods(payload);
+    if (res.neighborhoods) {
+      selectNeighborhoods.value = res.neighborhoods;
+      selectNeighborhoodsEdit.value = res.neighborhoods;
     }
   } catch (error) {
     if (error.code == "ERR_NETWORK") {
@@ -968,14 +999,14 @@ const showProducts = async () => {
   }
 };
 
-const computedProducts = computed(() => {
-  selectProducts.value = selectProducts.value.filter((item) => {
-    return !products.some((product) => {
-      return product.product.id == item.id;
+const computedNeighborhoods = computed(() => {
+  selectNeighborhoods.value = selectNeighborhoods.value.filter((item) => {
+    return !neighborhoods.some((neighborhood) => {
+      return neighborhood.neighborhood.id == item.id;
     });
   });
 
-  return selectProducts.value.map((item) => {
+  return selectNeighborhoods.value.map((item) => {
     return {
       label: item.name,
       value: item,
@@ -983,14 +1014,18 @@ const computedProducts = computed(() => {
   });
 });
 
-const computedProductsEdit = computed(() => {
-  selectProductsEdit.value = selectProductsEdit.value.filter((item) => {
-    return !productsEdit.value.some((product) => {
-      return product.product.id == item.id;
-    });
-  });
+const computedNeighborhoodsEdit = computed(() => {
+  console.log("neighborhoodsEdit", neighborhoodsEdit);
+  console.log("selectNeighborhoodsEdit", selectNeighborhoodsEdit);
+  selectNeighborhoodsEdit.value = selectNeighborhoodsEdit.value.filter(
+    (item) => {
+      return !neighborhoodsEdit.value.some((neighborhood) => {
+        return neighborhood.neighborhood.id == item.id;
+      });
+    }
+  );
 
-  return selectProductsEdit.value.map((item) => {
+  return selectNeighborhoodsEdit.value.map((item) => {
     return {
       label: item.name,
       value: item,
@@ -998,56 +1033,53 @@ const computedProductsEdit = computed(() => {
   });
 });
 
-const handleAddProduct = async () => {
+const handleAddNeighborhood = async () => {
   try {
     let aux = {
-      product: product.value.product,
-      quantity: product.value.quantity,
-      index: products.length + 1,
+      neighborhood: neighborhood.value.neighborhood,
+      index: neighborhoods.length + 1,
     };
-    products.push(aux);
-    product.value = {
-      product: null,
-      quantity: null,
+    neighborhoods.push(aux);
+    neighborhood.value = {
+      neighborhood: null,
     };
-    console.log("products", products);
   } catch (error) {
     console.error(error);
   }
 };
 
-const handleAddProductEdit = async () => {
+const handleAddNeighborhoodEdit = async () => {
   try {
     let aux = {
-      product: product.value.product,
-      quantity: product.value.quantity,
-      index: productsEdit.value.length + 1,
+      neighborhood: neighborhoodEdit.value.neighborhood,
+      index: neighborhoodsEdit.value.length + 1,
     };
-    productsEdit.value.push(aux);
-    product.value = {
-      product: null,
-      quantity: null,
+    neighborhoodsEdit.value.push(aux);
+    neighborhoodEdit.value = {
+      neighborhood: null,
     };
-    console.log("products", productsEdit);
   } catch (error) {
     console.error(error);
   }
 };
 
-const handleDeleteProduct = (product) => {
+const handleDeleteNeighborhood = (neighborhood) => {
   try {
-    selectedProduct.value = product;
-    let aux = products.filter((item) => {
-      return item.index == selectedProduct.value.index;
+    selectedNeighborhood.value = neighborhood;
+    let aux = neighborhoods.filter((item) => {
+      return item.index == selectedNeighborhood.value.index;
     });
-    selectProducts.value = [...selectProducts.value, aux[0].product];
-    let aux2 = products.findIndex((item) => {
-      return item.index == selectedProduct.value.index;
+    selectNeighborhoods.value = [
+      ...selectNeighborhoods.value,
+      aux[0].neighborhood,
+    ];
+    let aux2 = neighborhoods.findIndex((item) => {
+      return item.index == selectedNeighborhood.value.index;
     });
     if (aux2 > -1) {
-      products.splice(aux2, 1);
+      neighborhoods.splice(aux2, 1);
     }
-    products.forEach((item, index) => {
+    neighborhoods.forEach((item, index) => {
       item.index = index + 1;
     });
   } catch (error) {
@@ -1055,20 +1087,24 @@ const handleDeleteProduct = (product) => {
   }
 };
 
-const handleDeleteProductEdit = (product) => {
+const handleDeleteNeighborhoodEdit = (neighborhood) => {
   try {
-    selectedProduct.value = product;
-    let aux = productsEdit.value.filter((item) => {
-      return item.index == selectedProduct.value.index;
+    selectedNeighborhoodEdit.value = neighborhood;
+    let aux = neighborhoodsEdit.value.filter((item) => {
+      return item.index == selectedNeighborhoodEdit.value.index;
     });
-    selectProductsEdit.value = [...selectProductsEdit.value, aux[0].product];
-    let aux2 = productsEdit.value.findIndex((item) => {
-      return item.index == selectedProduct.value.index;
+    console.log("aux", aux);
+    selectNeighborhoodsEdit.value = [
+      ...selectNeighborhoodsEdit.value,
+      aux[0].neighborhood,
+    ];
+    let aux2 = neighborhoodsEdit.value.findIndex((item) => {
+      return item.index == selectedNeighborhoodEdit.value.index;
     });
     if (aux2 > -1) {
-      productsEdit.value.splice(aux2, 1);
+      neighborhoodsEdit.value.splice(aux2, 1);
     }
-    productsEdit.value.forEach((item, index) => {
+    neighborhoodsEdit.value.forEach((item, index) => {
       item.index = index + 1;
     });
   } catch (error) {
@@ -1087,31 +1123,46 @@ const handleSearchInput = async (props) => {
   }
 };
 
+const isNeighborhoodSelected = computed(() => {
+  if (neighborhoods.length == 0) {
+    return false;
+  } else {
+    return true;
+  }
+});
+
+const isNeighborhoodEditSelected = computed(() => {
+  if (neighborhoodsEdit.value.length == 0) {
+    return false;
+  } else {
+    return true;
+  }
+});
+
 const handleAdd = async () => {
   try {
+    if (isNeighborhoodSelected.value == false) {
+      return;
+    }
     loading.show();
-    let aux = products.map((item) => {
-      return {
-        id: item.product.id,
-        name: item.product.name,
-        quantity: item.quantity,
-      };
+    let aux = neighborhoods.map((item) => {
+      return item.neighborhood.id;
     });
+    console.log("aux", aux);
     let payload = {
       body: {
-        name: pickup.value.name,
-        date: pickup.value.date,
-        chain: pickup.value.chain,
-        user: pickup.value.user,
-        products: aux,
+        name: delivery.value.name,
+        date: delivery.value.date,
+        user: delivery.value.user,
+        routes: aux,
       },
     };
     console.log(payload);
-    let res = await pickupsStore.addPickup(payload);
+    let res = await deliveryStore.addDelivery(payload);
     if (res.data.statusCode == 200) {
       showMsg("success", "Recolección agregada correctamente");
       modalAdd.value = false;
-      handlePickups();
+      handleDeliveries();
     }
   } catch (error) {
     if (error.code == "ERR_NETWORK") {
@@ -1122,38 +1173,35 @@ const handleAdd = async () => {
       console.error(error);
       showMsg("error", "Error interno del servidor");
     }
-  }finally {
+  } finally {
     loading.hide();
   }
 };
 
-const showModalEdit = async (pickup) => {
+const showModalEdit = async (delivery) => {
   try {
-    console.log("pickup", pickup);
+    console.log("delivery", delivery);
     let aux = 0;
-    let productsAux = pickup.products.map((item) => {
+    let neighborhoodsAux = delivery.routes.map((item) => {
       aux = aux + 1;
       return {
         index: aux,
-        product: {
-          id: item.id,
+        neighborhood: {
+          id: item._id,
           name: item.name,
         },
-        quantity: item.quantity,
       };
     });
 
-    pickupEdit.value = {
-      id: pickup.id,
-      status: pickup.status,
-      name: pickup.name,
-      date: pickup.date.substring(0, 10),
-      chain: pickup.chain._id,
-      user: pickup.user._id,
-      products: productsAux,
+    deliveryEdit.value = {
+      id: delivery.id,
+      name: delivery.name,
+      date: delivery.date.substring(0, 10),
+      user: delivery.user._id,
+      routes: neighborhoodsAux,
     };
-    productsEdit.value = productsAux;
-    console.log("productsEdit", productsEdit);
+    neighborhoodsEdit.value = neighborhoodsAux;
+    console.log("neighborhoodsEdit", neighborhoodsEdit);
     modalEdit.value = true;
   } catch (error) {
     console.error(error);
@@ -1162,30 +1210,29 @@ const showModalEdit = async (pickup) => {
 
 const handleUpdate = async () => {
   try {
+    if (isNeighborhoodEditSelected.value == false) {
+      return;
+    }
     loading.show();
-    let aux = productsEdit.value.map((item) => {
-      return {
-        id: item.product.id,
-        name: item.product.name,
-        quantity: item.quantity,
-      };
+    let aux = neighborhoodsEdit.value.map((item) => {
+      return item.neighborhood.id;
     });
+    console.log("aux", aux);
     let payload = {
-      id: pickupEdit.value.id,
+      id: deliveryEdit.value.id,
       body: {
-        name: pickupEdit.value.name,
-        date: pickupEdit.value.date,
-        chain: pickupEdit.value.chain,
-        user: pickupEdit.value.user,
-        products: aux,
+        name: deliveryEdit.value.name,
+        date: deliveryEdit.value.date,
+        user: deliveryEdit.value.user,
+        routes: aux,
       },
     };
     console.log(payload);
-    let res = await pickupsStore.updatePickup(payload);
+    let res = await deliveryStore.updateDelivery(payload);
     if (res.data.statusCode == 200) {
-      showMsg("success", "Recolección modificada correctamente");
+      showMsg("success", "Reparto modificado correctamente");
       modalEdit.value = false;
-      handlePickups();
+      handleDeliveries();
     }
   } catch (error) {
     if (error.code == "ERR_NETWORK") {
@@ -1196,15 +1243,15 @@ const handleUpdate = async () => {
       console.error(error);
       showMsg("error", "Error interno del servidor");
     }
-  }finally {
+  } finally {
     loading.hide();
   }
 };
 
-const showModalCancel = async (pickup) => {
+const showModalCancel = async (delivery) => {
   try {
     cancel.value = {
-      id: pickup.id,
+      id: delivery.id,
       commentary: null,
       photos: [],
     };
@@ -1216,25 +1263,27 @@ const showModalCancel = async (pickup) => {
 
 const handleCancel = async () => {
   try {
+    console.log(cancel.value);
     let payload = {
       id: cancel.value.id,
       body: {
-        generalAnnexes: {
+        annexes: {
           commentary: cancel.value.commentary,
         },
       },
     };
     if (images.value.length > 0) {
-      payload.body.generalAnnexes = {
-        ...images.value,
+      payload.body.annexes = {
+        commentary: cancel.value.commentary,
+        photos: images.value,
       };
     }
     console.log("payload", payload);
-    let res = await pickupsStore.cancelPickup(payload);
+    let res = await deliveryStore.cancelDelivery(payload);
     if (res.data.statusCode == 200) {
       showMsg("success", "Recolección cancelada correctamente");
       modalCancel.value = false;
-      handlePickups();
+      handleDeliveries();
     }
   } catch (error) {
     if (error.code == "ERR_NETWORK") {
@@ -1248,36 +1297,46 @@ const handleCancel = async () => {
   }
 };
 
-const selectedRow = async (pickup) => {
+const selectedRow = async (delivery) => {
   try {
-    console.log("pickup products", pickup.products);
     let aux = 0;
-    let productsAux = pickup.products.map((item) => {
+    let routesAux = delivery.routes.map((item) => {
       aux = aux + 1;
       return {
         index: aux,
-        product: {
-          id: item.id,
-          name: item.name,
-        },
-        quantity: item.quantity,
+        id: item._id,
+        name: item.name,
+        status: item.status,
+        route: item
       };
     });
 
-    pickupEdit.value = {
-      id: pickup.id,
-      name: pickup.name,
-      status: pickup.status,
-      date: pickup.date,
-      chain: pickup.chain.id,
-      user: pickup.user,
-      products: productsAux,
-      generalAnnexes: {
-        commentary: pickup.generalAnnexes ? pickup.generalAnnexes.commentary : null,
-        photos: pickup.generalAnnexes ? pickup.generalAnnexes.photos : [],
+    deliveryEdit.value = {
+      id: delivery.id,
+      name: delivery.name,
+      date: delivery.date.substring(0, 10),
+      user: delivery.user,
+      status: delivery.status,
+      routes: routesAux,
+      annexes: {
+        commentary: delivery.annexes ? delivery.annexes.commentary : null,
+        photos: delivery.annexes ? delivery.annexes.photos : [],
       },
     };
+    console.log("deliveryEdit", deliveryEdit.value);
     modalInfo.value = true;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const showModalInfoRoute = async (route) => {
+  try {
+    console.log("route", route);
+    console.log("deliveryEdit", deliveryEdit.value);
+    routeSelected.value = route;
+    modalInfo.value = false;
+    modalInfoRoute.value = true;
   } catch (error) {
     console.log(error);
   }
@@ -1304,9 +1363,8 @@ const removeImage = (index) => {
 };
 
 onMounted(() => {
-  handlePickups();
-  showStores();
+  handleDeliveries();
   showUsers();
-  showProducts();
+  showNeighborhoods();
 });
 </script>
