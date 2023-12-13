@@ -82,6 +82,9 @@ const router = createRouter({
           ],
         },
       ],
+      meta: {
+        privilege: true,
+      },
     },
   ],
 });
