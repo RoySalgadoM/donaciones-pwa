@@ -1295,17 +1295,19 @@ const handleCancel = async () => {
     let payload = {
       id: cancel.value.id,
       body: {
-        annexes: {
+        generalAnnexes: {
           commentary: cancel.value.commentary,
         },
       },
     };
     if (images.value.length > 0) {
-      payload.body.annexes = {
+      payload.body.generalAnnexes = {
         commentary: cancel.value.commentary,
         photos: images.value,
       };
     }
+
+    payload.body.dateEnd = new Date();
 
     if (!isOnline) {
       pendientRequest.push(() => deliveryStore.cancelDelivery(payload));
