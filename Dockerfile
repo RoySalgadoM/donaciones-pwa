@@ -26,7 +26,8 @@ WORKDIR /usr/share/nginx/html
 
 # Copiar los archivos construidos desde el primer bloque
 COPY --from=builder /app/dist .
-
+RUN ls /app/dist
+RUN ls
 # Exponer el puerto 80
 EXPOSE 80
 
