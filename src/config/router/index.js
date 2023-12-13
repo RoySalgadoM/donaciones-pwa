@@ -1,6 +1,14 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Login from "@/modules/auth/pages/Login.vue";
 
+import MainBoard from "@/kernel/layouts/Mainboard.vue";
+import Employees from "@/modules/employees/pages/Query.vue";
+import Products from "@/modules/products/pages/Query.vue";
+import Stores from "@/modules/stores/pages/Query.vue";
+import Neighborhoods from "@/modules/neighborhood/pages/Query.vue";
+import Pickups from "@/modules/pickups/pages/Query.vue";
+import Deliveries from "@/modules/delivery/pages/Query.vue";
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -11,7 +19,7 @@ const router = createRouter({
     },
     {
       path: "/donaciones",
-      component: () => import("@/kernel/layouts/Mainboard.vue"),
+      component: MainBoard,
       children: [
         {
           path: "usuarios",
@@ -19,7 +27,7 @@ const router = createRouter({
             {
               path: "query",
               name: "queryUser",
-              component: () => import("@/modules/employees/pages/Query.vue"),
+              component: Employees,
             },
           ],
         },
@@ -29,7 +37,7 @@ const router = createRouter({
             {
               path: "query",
               name: "queryProduct",
-              component: () => import("@/modules/products/pages/Query.vue"),
+              component: Products,
             },
           ],
         },
@@ -39,7 +47,7 @@ const router = createRouter({
             {
               path: "query",
               name: "queryStore",
-              component: () => import("@/modules/stores/pages/Query.vue"),
+              component: Stores,
             },
           ],
         },
@@ -49,7 +57,7 @@ const router = createRouter({
             {
               path: "query",
               name: "queryNeighborhood",
-              component: () => import("@/modules/neighborhood/pages/Query.vue"),
+              component: Neighborhoods,
             },
           ],
         },
@@ -59,7 +67,7 @@ const router = createRouter({
             {
               path: "query",
               name: "queryPickups",
-              component: () => import("@/modules/pickups/pages/Query.vue"),
+              component: Pickups,
             },
           ],
         },
@@ -69,11 +77,14 @@ const router = createRouter({
             {
               path: "query",
               name: "queryDeliveries",
-              component: () => import("@/modules/delivery/pages/Query.vue"),
+              component: Deliveries,
             },
           ],
         },
       ],
+      meta: {
+        privilege: true,
+      },
     },
   ],
 });
